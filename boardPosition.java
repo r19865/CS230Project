@@ -2,15 +2,16 @@
 public class boardPosition {
 
 	private double[] position = new double[3];
+	private boolean playable;
 	
 	private Tile thisTile;
-	private Tile eastNeighbors;
-	private Tile westNeighbors;
-	private Tile belowNeighbors;
+	private boardPosition eastNeighbors;
+	private boardPosition westNeighbors;
+	private boardPosition belowNeighbors;
 	
-	public boardPosition(double[] position)
+	public boardPosition()
 	{
-		setPosition(position);
+		playable = false;
 	}
 	
 	/////////////////////////////////////////////////////////
@@ -36,22 +37,22 @@ public class boardPosition {
 		return position;
 	}
 	
-	public Tile getThisTile()
+	public boardPosition getThisTile()
 	{
 		return thisTile;
 	}
 	
-	public Tile getEastNeighbors()
+	public boardPosition getEastNeighbors()
 	{
 		return eastNeighbors;
 	}
 	
-	public Tile getWestNeighbors()
+	public boardPosition getWestNeighbors()
 	{
 		return westNeighbors;
 	}
 	
-	public Tile getBelowNeighbors()
+	public boardPosition getBelowNeighbors()
 	{
 		return belowNeighbors;
 	}
@@ -74,28 +75,28 @@ public class boardPosition {
 		}
 	}
 	
-	public void setThisTile(Tile thisTile)
+	public void setThisTile(boardPosition thisTile)
 	{
 		this.thisTile = thisTile;
 	}
 	
-	public void setEastNeighbors(Tile eastNeighbors)
+	public void setEastNeighbors(boardPosition eastNeighbors)
 	{
 		this.eastNeighbors = eastNeighbors;
 	}
 	
-	public void setWestNeighbors(Tile westNeighbors)
+	public void setWestNeighbors(boardPosition westNeighbors)
 	{
 		this.westNeighbors = westNeighbors;
 	}
 	
-	public void setBelowNeighbors(Tile belowNeighbors)
+	public void setBelowNeighbors(boardPosition belowNeighbors)
 	{
 		this.belowNeighbors = belowNeighbors;
 	}
 	
 	/////////////////////////////////////////////////////////
-	///////////////// Other Methods /////////////////////////
+	///////////////// Public Methods /////////////////////////
 	////////////////////////////////////////////////////////
 	
 	/**
@@ -106,17 +107,54 @@ public class boardPosition {
 	 * @param newTile
 	 * @return 
 	 */
-	public Tile switchNeighbors(boardPosition newTile)
+	public boardPosition switchNeighbors(boardPosition newTile)
 	{
-		Tile tempTile = newTile.getThisTile();
-		
-		newTile.setThisTile(this.thisTile);
-		this.thisTile = tempTile;
-		tempTile = null;
+		if(newTile.getThisTile().isOnBoard())
+		{
+			Tile tempTile = newTile.getThisPosition();
+			
+			newTile.setThisTile(this.thisTile);
+			this.thisTile = tempTile;
+			tempTile = null;
+		}else
+		{
+			newTile = null;
+		}
 		
 		return newTile;
 	}
 	
+	public void render()
+	{
+		
+	}
 	
+	public void notifyNeighbors(boolean onBoard)
+	{
+		thisTile.setOnBoard(onBoard);
+		
+		if(!onBoard)
+		{
+			if(eastNeighbors != null)
+				eastNeighbors.getThisTile().setPlayable(true);
+			if(westNeighbors != null)
+				westNeighbors.getThisTile().setPlayable(true);
+			if(belowNeighbors != null)
+				checkBelowNeighbors();
+		}
+	}
+	
+	/////////////////////////////////////////////////////////
+	///////////////// Private Methods ///////////////////////
+	////////////////////////////////////////////////////////
+	
+		
+	private void checkBelowNeighbors()
+	{
+		if(belowNeighbors.getEastNeighbors().getZ() != belowNeighbors.getZ() || belowNeighbors.getWestNeighbors().getZ() != belowNeighbors.getZ())
+		{
+			belowNeighbors.getThisTile().setPlayable(true);
+		}
+	}
 	
 }
