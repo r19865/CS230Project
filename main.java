@@ -14,53 +14,53 @@ public class main
 			{
 				if (i<4)
 				{
-					allTiles[counter] = new tile(null, "Dot "+j, true);
+					allTiles[counter] = new tile(null, "Dot "+j, true, true);
 				}
 				else if (i>3 && i<8)
 				{
-					allTiles[counter] = new tile(null, "Bamboo "+j, true);
+					allTiles[counter] = new tile(null, "Bamboo "+j, true, true);
 				}
 				else if (i>7 && i<12)
 				{
-					allTiles[counter] = new tile(null, "Character "+j, true);
+					allTiles[counter] = new tile(null, "Character "+j, true, true);
 				}
 				else if (i>11 && i<16)
 				{
 					if (j==1)
 					{
-						allTiles[counter] = new tile(null, "North", true);
+						allTiles[counter] = new tile(null, "North", true, true);
 					}
 					if (j==2)
 					{
-						allTiles[counter] = new tile(null, "South", true);
+						allTiles[counter] = new tile(null, "South", true, true);
 					}
 					if (j==3)
 					{
-						allTiles[counter] = new tile(null, "East", true);
+						allTiles[counter] = new tile(null, "East", true, true);
 					}
 					if (j==4)
 					{
-						allTiles[counter] = new tile(null, "West", true);
+						allTiles[counter] = new tile(null, "West", true, true);
 					}
 					if (j==5)
 					{
-						allTiles[counter] = new tile(null, "Red", true);
+						allTiles[counter] = new tile(null, "Red", true, true);
 					}
 					if (j==6)
 					{
-						allTiles[counter] = new tile(null, "Green", true);
+						allTiles[counter] = new tile(null, "Green", true, true);
 					}
 					if (j==7)
 					{
-						allTiles[counter] = new tile(null, "White", true);
+						allTiles[counter] = new tile(null, "White", true, true);
 					}
 					if (j==8)
 					{
-						allTiles[counter] = new tile(null, "Flower", true);
+						allTiles[counter] = new tile(null, "Flower", true, true);
 					}
 					if (j==9)
 					{
-						allTiles[counter] = new tile(null, "Season", true);
+						allTiles[counter] = new tile(null, "Season", true, true);
 					}
 				}
 				//Print out the tiles
