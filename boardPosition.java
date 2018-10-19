@@ -4,7 +4,7 @@ public class boardPosition {
 	private double[] position = new double[3];
 	private boolean playable;
 	
-	private Tile thisTile;
+	private tile thisTile;
 	private boardPosition eastNeighbors;
 	private boardPosition westNeighbors;
 	private boardPosition belowNeighbors;
@@ -37,7 +37,7 @@ public class boardPosition {
 		return position;
 	}
 	
-	public boardPosition getThisTile()
+	public tile getThisTile()
 	{
 		return thisTile;
 	}
@@ -75,7 +75,7 @@ public class boardPosition {
 		}
 	}
 	
-	public void setThisTile(boardPosition thisTile)
+	public void setThisTile(tile thisTile)
 	{
 		this.thisTile = thisTile;
 	}
@@ -109,9 +109,9 @@ public class boardPosition {
 	 */
 	public boardPosition switchNeighbors(boardPosition newTile)
 	{
-		if(newTile.getThisTile().isOnBoard())
+		if(newTile.getThisTile().getOnBoard())
 		{
-			Tile tempTile = newTile.getThisPosition();
+			tile tempTile = newTile.getThisTile();
 			
 			newTile.setThisTile(this.thisTile);
 			this.thisTile = tempTile;
@@ -142,6 +142,12 @@ public class boardPosition {
 			if(belowNeighbors != null)
 				checkBelowNeighbors();
 		}
+	}
+	
+	
+	public String toString()
+	{
+		return String.format("%s %nX: %f Y: %f Z: %f", thisTile.getType(), position[0], position[1], position[2]);
 	}
 	
 	/////////////////////////////////////////////////////////
