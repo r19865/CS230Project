@@ -1,3 +1,4 @@
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,8 +12,29 @@ public class boardArrangements
 	private int xsize;
 	private int ysize;
 	private int zsize;
-	private int[] lineRead=new int[ysize];
+	private String[] lineRead=new String[ysize];
 	private int[][][] layout=new int[xsize][ysize][zsize];
+	
+	boardArrangements()
+	{
+		xsize=0;
+		ysize=0;
+		zsize=0;
+	}
+	
+	boardArrangements(int x,int y, int z)
+	{
+		this.xsize=0;
+		this.ysize=0;
+		this.zsize=0;
+	}
+	
+	boardArrangements (boardArrangements a)
+	{
+		this.xsize=a.xsize;
+		this.ysize=a.ysize;
+		this.zsize=a.zsize;
+	}
 	
 	boardArrangements(File myFile) throws IOException
 	{
@@ -37,15 +59,55 @@ public class boardArrangements
 			String trash=br.readLine();
 			for (int j=0; j<ysize; j++) //ysize
 			{
-				lineRead[j]=Integer.parseInt(br.readLine());
+				//lineRead[j]=Integer.parseInt(br.readLine());
+				String nextLine=br.readLine();
+				char[] temp= nextLine.toCharArray();
+				
 				System.out.print(lineRead[j]);
 				for (int k=0; k<xsize; k++) //xsize
 				{
-					layout[k][j][i] = [ lineRead[j].charAt(k)][j][i];
+					layout[k][j][i] = Character.getNumericValue(temp[k]);
 				}
 				
 			}
 		}
-		return layout;
+		return;
 	}
+	
+	//get set row
+	public int getRow()
+	{
+		return xsize;
+	}
+	
+	public void setRow(int i)
+	{
+		xsize=i;
+	}
+	
+	public int getColumn()
+	{
+		return ysize;
+	}
+	
+	public void setColumn(int j)
+	{
+		ysize=j;
+	}
+	
+	public int getHeight()
+	{
+		return zsize;
+	}
+	
+	public void setHeight(int k)
+	{
+		zsize=k;
+	}
+	
+	public int getPosition(int i,int j, int k)
+	{
+		return layout[i][j][k];
+	}
+	
 }
