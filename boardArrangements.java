@@ -29,7 +29,7 @@ public class boardArrangements
 		this.zsize=0;
 	}
 	
-	boardArrangements (boardArrangements a)
+	boardArrangements(boardArrangements a)
 	{
 		this.xsize=a.xsize;
 		this.ysize=a.ysize;

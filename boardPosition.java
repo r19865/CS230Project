@@ -42,6 +42,11 @@ public class boardPosition {
 		return thisTile;
 	}
 	
+	public boolean getPlayable()
+	{
+		return playable;
+	}
+	
 	public boardPosition getEastNeighbors()
 	{
 		return eastNeighbors;
@@ -78,6 +83,11 @@ public class boardPosition {
 	public void setThisTile(tile thisTile)
 	{
 		this.thisTile = thisTile;
+	}
+	
+	public void setPlayable(boolean playable)
+	{
+		this.playable = playable;
 	}
 	
 	public void setEastNeighbors(boardPosition eastNeighbors)
@@ -136,9 +146,9 @@ public class boardPosition {
 		if(!onBoard)
 		{
 			if(eastNeighbors != null)
-				eastNeighbors.getThisTile().setPlayable(true);
+				eastNeighbors.setPlayable(true);;
 			if(westNeighbors != null)
-				westNeighbors.getThisTile().setPlayable(true);
+				westNeighbors.setPlayable(true);
 			if(belowNeighbors != null)
 				checkBelowNeighbors();
 		}
@@ -159,7 +169,7 @@ public class boardPosition {
 	{
 		if(belowNeighbors.getEastNeighbors().getZ() != belowNeighbors.getZ() || belowNeighbors.getWestNeighbors().getZ() != belowNeighbors.getZ())
 		{
-			belowNeighbors.getThisTile().setPlayable(true);
+			belowNeighbors.setPlayable(true);
 		}
 	}
 	
