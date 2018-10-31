@@ -13,30 +13,30 @@ public class boardArrangements
 	private int ysize;
 	private int zsize;
 	private String[] lineRead=new String[ysize];
-	private int[][][] layout=new int[xsize][ysize][zsize];
+	private int[][][] layout;
 	
-	boardArrangements()
+	public boardArrangements()
 	{
 		xsize=0;
 		ysize=0;
 		zsize=0;
 	}
 	
-	boardArrangements(int x,int y, int z)
+	public boardArrangements(int x,int y, int z)
 	{
 		this.xsize=0;
 		this.ysize=0;
 		this.zsize=0;
 	}
 	
-	boardArrangements(boardArrangements a)
+	public boardArrangements(boardArrangements a)
 	{
 		this.xsize=a.xsize;
 		this.ysize=a.ysize;
 		this.zsize=a.zsize;
 	}
 	
-	boardArrangements(File myFile) throws IOException
+	public boardArrangements(File myFile) throws IOException
 	{
 		readFile(myFile);
 	}
@@ -50,10 +50,8 @@ public class boardArrangements
 		xsize=Integer.parseInt(size[0]);
 		ysize=Integer.parseInt(size[1]);
 		zsize=Integer.parseInt(size[2]);
-		//triple for loop
-		//i 0-xsize
-		//j 0-ysize
-		//z 0-zsize
+		layout = new int[xsize][ysize][zsize];
+
 		for (int i=0; i<zsize; i++)//zsize
 		{
 			String trash=br.readLine();
@@ -63,7 +61,7 @@ public class boardArrangements
 				String nextLine=br.readLine();
 				char[] temp= nextLine.toCharArray();
 				
-				System.out.print(lineRead[j]);
+				//System.out.print(lineRead[j]);
 				for (int k=0; k<xsize; k++) //xsize
 				{
 					layout[k][j][i] = Character.getNumericValue(temp[k]);
