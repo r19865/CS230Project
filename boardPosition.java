@@ -9,9 +9,14 @@ public class boardPosition {
 	private boardPosition westNeighbors;
 	private boardPosition belowNeighbors;
 	
-	public boardPosition()
+	public boardPosition(tile thisTile)
 	{
+		this.thisTile = thisTile;
+		
 		playable = false;
+		eastNeighbors = null;
+		westNeighbors = null;
+		belowNeighbors = null;
 	}
 	
 	/////////////////////////////////////////////////////////

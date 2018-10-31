@@ -1,5 +1,8 @@
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.Random;
 
@@ -7,17 +10,17 @@ public class BoardController
 {
 	
 	private final int TOTAL_TILES= 144;
-	private final int NUMBER_OF_ARRANGEMENTS = 1;
+	//private final int NUMBER_OF_ARRANGEMENTS = 1;
 	
 	private tile allTiles[]= new tile[TOTAL_TILES];
 	private boardPosition[][][] positions;
 	
-	private String[] arrangmentFiles = new String[NUMBER_OF_ARRANGEMENTS];
-	private int indexOfCurrentArrangement = 0;
+	//private String[] arrangmentFiles = new String[NUMBER_OF_ARRANGEMENTS];
+	//private int indexOfCurrentArrangement = 0;
 	private boardArrangements currentArrangement;
-	private ListInterface<String> validTiles= new ArrayList<>();
-	
+
 	private static Random random;
+	private List<boardPosition> validTiles = new ArrayList<>();
 
 	public static void main(String[] args) 
 	{
@@ -32,7 +35,6 @@ public class BoardController
 		currentArrangement = new boardArrangements(new File(filename));
 		initializeTiles();
 		initializePositions();
-		System.out.print("done");
 	}
 
 	/**
@@ -112,6 +114,7 @@ public class BoardController
 	{
 		shuffleTiles();
 		positions = new boardPosition[currentArrangement.getHeight()][currentArrangement.getRow()][currentArrangement.getColumn()];
+		int counter = 0;
 		
 		// loop over the number of levels
 		for(int l = 0; l < currentArrangement.getHeight(); l++)
@@ -130,19 +133,35 @@ public class BoardController
 					}
 					else
 					{
-						positions[l][r][c] = new boardPosition();
+						// initializes the positions, sets whether playable, and give physical position on the GUI
+						positions[l][r][c] = new boardPosition(allTiles[counter]);
+						counter++;
+						positions[l][r][c].setPlayable(currentArrangement.getPosition(r, c, l));
+						positions[l][r][c].setPosition(r, c, l);
+						if(positions[l][r][c].getPlayable())
+						{
+							validTiles.add(positions[l][r][c]);
+						}
+						
+						//System.out.println(positions.length);
 						
 						if(c != 0) // if not the first column, link to the position on the left
 						{
-							positions[l][r][c].setWestNeighbors(positions[l][r][c-1]);
+							//System.out.println("(" + l + "," + r + "," + c + ") West: " + l + "" + r + "" + (c-1));
+							if(positions[l][r][c] != null)
+								positions[l][r][c].setWestNeighbors(positions[l][r][c-1]);
 						}
-						if(c != currentArrangement.getColumn()) // if not last column, link prior position to this position (right neighbor)
+						if(c != 0 ) // if first column, link prior position to this position (right neighbor)
 						{
-							positions[l][r][c-1].setEastNeighbors(positions[l][r][c]);
+							//System.out.println("(" + l + "," + r + "," + (c-1) + ") East: " + l + "" + r + "" + (c));
+							if(positions[l][r][c-1] != null)
+								positions[l][r][c-1].setEastNeighbors(positions[l][r][c]);
 						}
 						if(l != 0) // if not the bottom layer, link to below
 						{
-							positions[l][r][c].setBelowNeighbors(positions[l-1][r][c]);
+							//System.out.println("l: " + l + "Below: " + (l-1) + "" + r + "" + c);
+							if(positions[l][r][c] != null)
+								positions[l][r][c].setBelowNeighbors(positions[l-1][r][c]);
 						}
 					}
 					

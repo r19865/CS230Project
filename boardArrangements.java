@@ -50,13 +50,9 @@ public class boardArrangements
 		xsize=Integer.parseInt(size[0]);
 		ysize=Integer.parseInt(size[1]);
 		zsize=Integer.parseInt(size[2]);
-		//triple for loop
-		//i 0-xsize
-		//j 0-ysize
-		//z 0-zsize
 
-		layout=new int[xsize][ysize][zsize];
-		
+		layout = new int[xsize][ysize][zsize];
+
 		for (int i=0; i<zsize; i++)//zsize
 		{
 			br.readLine();
@@ -65,8 +61,7 @@ public class boardArrangements
 				//lineRead[j]=Integer.parseInt(br.readLine());
 				String nextLine=br.readLine();
 				char[] temp= nextLine.toCharArray();
-				//System.out.print(Character.getNumericValue(temp[0]));
-				//System.out.print(nextLine);
+
 				for (int k=0; k<xsize; k++) //xsize
 				{
 					layout[k][j][i] = Character.getNumericValue(temp[k]);
