@@ -90,6 +90,14 @@ public class boardPosition {
 		this.playable = playable;
 	}
 	
+	public void setPlayable(int playableInt)
+	{
+		if (playableInt==9)
+		{
+			this.playable = true;
+		}
+	}
+	
 	public void setEastNeighbors(boardPosition eastNeighbors)
 	{
 		this.eastNeighbors = eastNeighbors;

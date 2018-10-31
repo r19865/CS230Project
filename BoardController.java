@@ -15,6 +15,7 @@ public class BoardController
 	private String[] arrangmentFiles = new String[NUMBER_OF_ARRANGEMENTS];
 	private int indexOfCurrentArrangement = 0;
 	private boardArrangements currentArrangement;
+	private ListInterface<String> validTiles= new ArrayList<>();
 	
 	private static Random random;
 
@@ -177,7 +178,6 @@ public class BoardController
         allTiles[i] = allTiles[j];
         allTiles[j] = temp;
     }
-
-	
+    
 
 }
