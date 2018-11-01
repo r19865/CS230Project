@@ -1,5 +1,5 @@
 
-public class boardPosition {
+public class boardPosition implements Comparable<boardPosition>{
 
 	private double[] position = new double[3];
 	private boolean playable;
@@ -185,5 +185,12 @@ public class boardPosition {
 			belowNeighbors.setPlayable(true);
 		}
 	}
+	
+	public int compareTo(boardPosition bp) 
+    {
+    		int compare= getThisTile().getType().compareTo(bp.getThisTile().getType());
+    		
+        return compare;
+    }
 	
 }
