@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
 import java.util.Random;
@@ -54,8 +55,10 @@ public class BoardController
     	
 		initializeTiles();
 		initializePositions();
-		
+
 		initializeGUI(windowTitle, windowWidth, windowHeight, xlocation, ylocation);
+		findValidPairs();
+		
 	}
 
 	/**
@@ -255,6 +258,27 @@ public class BoardController
         allTiles[j] = temp;
     }
     
+   private int findValidPairs()
+   {
+	   int counter=0;
+	   int validPair=0;
+	   boardPosition mySpot=null;
+	   Collections.sort( validTiles);
+	   while (counter<validTiles.size()-1)
+	   {
+		   mySpot=validTiles.get(counter);
+		   if (mySpot.getThisTile().getType().equals(validTiles.get(counter+1).getThisTile().getType()))
+		   {
+			   validPair++;
+			   counter=counter+2;
+		   }
+		   else
+		   {
+			   counter++;
+		   }
+	   }
+	   return validPair;
+   }
 
     private void initializeGUI(String windowTitle, int width, int height, int xlocation, int ylocation)
     {

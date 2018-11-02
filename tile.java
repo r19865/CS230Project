@@ -1,6 +1,6 @@
 import java.awt.image.BufferedImage;
 
-public class tile 
+public class tile implements Comparable<tile>
 {
 	BufferedImage image;
 	String type;
@@ -42,6 +42,7 @@ public class tile
 		return onBoard;
 	}
 	
+	
 	public void setImage(BufferedImage newImage)
 	{
 		image= newImage;
@@ -60,11 +61,18 @@ public class tile
 	
 	public String toString()
 	{
-		return String.format("Tile Type: %s%n Is it on the board? %s%n ", type, onBoard);
+		return String.format("Tile Type: %s %n Is it on the board? %s%n ", type);
 	}
 	
-	public int compareTo(tile other)
+	public boolean equals(tile other)
 	{
-		return type.compareTo(other.type);
+		return toString().equals((other.toString()));
 	}
+	
+	public int compareTo(tile otherT) 
+    {
+    		int compare= getType().compareTo(otherT.getType());
+    		
+        return compare;
+    }
 }
