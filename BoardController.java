@@ -1,10 +1,17 @@
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
 public class BoardController 
 {
@@ -18,23 +25,37 @@ public class BoardController
 	//private String[] arrangmentFiles = new String[NUMBER_OF_ARRANGEMENTS];
 	//private int indexOfCurrentArrangement = 0;
 	private boardArrangements currentArrangement;
-
 	private static Random random;
 	private List<boardPosition> validTiles = new ArrayList<>();
+	
+    private JFrame gameJFrame;
+    private Container gameContentPane;
+    private BufferedImage tilesImage;
+    private int width;
+    private int height;
 
 	public static void main(String[] args) 
 	{
 		try {
-			BoardController controller = new BoardController("simple.txt");
+			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 1000, 1000, 20, 20);
 		}catch(IOException e)
 		{}
 	}
 	
-	public BoardController(String filename) throws IOException
+	public BoardController(String filename, String windowTitle, int windowWidth, int windowHeight, int xlocation, int ylocation) throws IOException
 	{
 		currentArrangement = new boardArrangements(new File(filename));
+		
+		tilesImage = ImageIO.read(new FileInputStream(new File("tiles.jpg")));
+		this.width = tilesImage.getWidth() / 12;
+    	this.height = tilesImage.getHeight() /12;
+    	
+    	//System.out.print("Width: " + width + "Height: " + height); // 62 x 82
+    	
 		initializeTiles();
 		initializePositions();
+		
+		initializeGUI(windowTitle, windowWidth, windowHeight, xlocation, ylocation);
 	}
 
 	/**
@@ -43,67 +64,103 @@ public class BoardController
 	private void initializeTiles()
 	{
 		//initialize tiles in a 1D array
-		int counter=0;
+//		int counter=0;
+//		
+//		for (int i=0; i<16; i++)
+//		{
+//			for (int j=1; j<10; j++)
+//			{
+//				if (i<4)
+//				{
+//					allTiles[counter] = new tile(null, "Dot "+j, true);
+//				}
+//				else if (i>3 && i<8)
+//				{
+//					allTiles[counter] = new tile(null, "Bamboo "+j, true);
+//				}
+//				else if (i>7 && i<12)
+//				{
+//					allTiles[counter] = new tile(null, "Character "+j, true);
+//				}
+//				else if (i>11 && i<16)
+//				{
+//					if (j==1)
+//					{
+//						allTiles[counter] = new tile(null, "North", true);
+//					}
+//					if (j==2)
+//					{
+//						allTiles[counter] = new tile(null, "South", true);
+//					}
+//					if (j==3)
+//					{
+//						allTiles[counter] = new tile(null, "East", true);
+//					}
+//					if (j==4)
+//					{
+//						allTiles[counter] = new tile(null, "West", true);
+//					}
+//					if (j==5)
+//					{
+//						allTiles[counter] = new tile(null, "Red", true);
+//					}
+//					if (j==6)
+//					{
+//						allTiles[counter] = new tile(null, "Green", true);
+//					}
+//					if (j==7)
+//					{
+//						allTiles[counter] = new tile(null, "White", true);
+//					}
+//					if (j==8)
+//					{
+//						allTiles[counter] = new tile(null, "Flower", true);
+//					}
+//					if (j==9)
+//					{
+//						allTiles[counter] = new tile(null, "Season", true);
+//					}
+//				}
+//				//Print out the tiles
+//				//System.out.print(allTiles[counter].toString());
+//				counter++;
+//			}
+//		}
 		
-		for (int i=0; i<16; i++)
+		for(int n = 0; n<9; n++)
 		{
-			for (int j=1; j<10; j++)
+			for(int m = 0; m<4; m++)
 			{
-				if (i<4)
-				{
-					allTiles[counter] = new tile(null, "Dot "+j, true);
-				}
-				else if (i>3 && i<8)
-				{
-					allTiles[counter] = new tile(null, "Bamboo "+j, true);
-				}
-				else if (i>7 && i<12)
-				{
-					allTiles[counter] = new tile(null, "Character "+j, true);
-				}
-				else if (i>11 && i<16)
-				{
-					if (j==1)
-					{
-						allTiles[counter] = new tile(null, "North", true);
-					}
-					if (j==2)
-					{
-						allTiles[counter] = new tile(null, "South", true);
-					}
-					if (j==3)
-					{
-						allTiles[counter] = new tile(null, "East", true);
-					}
-					if (j==4)
-					{
-						allTiles[counter] = new tile(null, "West", true);
-					}
-					if (j==5)
-					{
-						allTiles[counter] = new tile(null, "Red", true);
-					}
-					if (j==6)
-					{
-						allTiles[counter] = new tile(null, "Green", true);
-					}
-					if (j==7)
-					{
-						allTiles[counter] = new tile(null, "White", true);
-					}
-					if (j==8)
-					{
-						allTiles[counter] = new tile(null, "Flower", true);
-					}
-					if (j==9)
-					{
-						allTiles[counter] = new tile(null, "Season", true);
-					}
-				}
-				//Print out the tiles
-				//System.out.print(allTiles[counter].toString());
-				counter++;
+				allTiles[12*n+3*m] = new tile(null, "Dot "+(n+1), true);
+				tilesImage.getSubimage(width*n, 0, width, height);
+				allTiles[12*n+3*m+1] = new tile(null, "Bamboo "+(n+1), true);
+				tilesImage.getSubimage(width*n, 4*height, width, height);
+				allTiles[12*n+3*m+2] = new tile(null, "Character"+(n+1), true);
+				tilesImage.getSubimage(width*n, 8*height, width, height);
 			}
+		}
+		for(int m = 0; m<4; m++)
+		{	
+			allTiles[9*m+108] = new tile(null, "Season", true);
+			tilesImage.getSubimage(11*width, 8*height +m*height, width, height);
+			allTiles[9*m+109] = new tile(null, "Flower", true);
+			tilesImage.getSubimage(11*width, 4*height + m*height, width, height);
+			
+			allTiles[9*m+110] = new tile(null, "North", true);
+			tilesImage.getSubimage(10*width, 8*height + m*height, width, height);
+			allTiles[9*m+111] = new tile(null, "South", true);
+			tilesImage.getSubimage(10*width, 4*height + m*height, width, height);
+			allTiles[9*m+112] = new tile(null, "East", true);
+			tilesImage.getSubimage(9*width, 4*height + m*height, width, height);
+			allTiles[9*m+113] = new tile(null, "West", true);
+			tilesImage.getSubimage(9*width, 8*height + m*height, width, height);
+			
+			allTiles[9*m+114] = new tile(null, "Red", true);
+			tilesImage.getSubimage(9*width, m*height, width, height);
+			allTiles[9*m+115] = new tile(null, "Green", true);
+			tilesImage.getSubimage(10*width, m*height, width, height);
+			allTiles[9*m+116] = new tile(null, "White", true);
+			tilesImage.getSubimage(11*width, m*height, width, height);
 		}
 	}
 
@@ -137,7 +194,7 @@ public class BoardController
 						positions[l][r][c] = new boardPosition(allTiles[counter]);
 						counter++;
 						positions[l][r][c].setPlayable(currentArrangement.getPosition(r, c, l));
-						positions[l][r][c].setPosition(r, c, l);
+						positions[l][r][c].setPosition(width*r, height*c, l);
 						if(positions[l][r][c].getPlayable())
 						{
 							validTiles.add(positions[l][r][c]);
@@ -199,4 +256,17 @@ public class BoardController
     }
     
 
+    private void initializeGUI(String windowTitle, int width, int height, int xlocation, int ylocation)
+    {
+        gameJFrame = new JFrame(windowTitle);
+        gameJFrame.setSize(width, height);
+        gameJFrame.setLocation(xlocation, ylocation);
+        gameJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gameContentPane = gameJFrame.getContentPane();
+        gameContentPane.setLayout(null); // not need layout, will use absolute system
+        gameContentPane.setBackground(Color.gray);
+        gameJFrame.setVisible(true);
+    }
+    
+    
 }
