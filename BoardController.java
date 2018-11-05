@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 public class BoardController 
@@ -52,11 +53,11 @@ public class BoardController
     	this.height = tilesImage.getHeight() /12;
     	
     	//System.out.print("Width: " + width + "Height: " + height); // 62 x 82
-    	
-		initializeTiles();
-		initializePositions();
-
 		initializeGUI(windowTitle, windowWidth, windowHeight, xlocation, ylocation);
+		initializeTiles();
+		initializePositions(gameJFrame);
+		drawBoard();
+
 		findValidPairs();
 		
 	}
@@ -135,42 +136,48 @@ public class BoardController
 			for(int m = 0; m<4; m++)
 			{
 				allTiles[12*n+3*m] = new tile(null, "Dot "+(n+1), true);
-				tilesImage.getSubimage(width*n, 0, width, height);
+				allTiles[12*n+3*m].setImage(getIcon(width*n, 0, width, height));
 				allTiles[12*n+3*m+1] = new tile(null, "Bamboo "+(n+1), true);
-				tilesImage.getSubimage(width*n, 4*height, width, height);
+				allTiles[12*n+3*m+1].setImage(getIcon(width*n, 4*height, width, height));
 				allTiles[12*n+3*m+2] = new tile(null, "Character"+(n+1), true);
-				tilesImage.getSubimage(width*n, 8*height, width, height);
+				allTiles[12*n+3*m+2].setImage(getIcon(width*n, 8*height, width, height));
 			}
 		}
 		for(int m = 0; m<4; m++)
 		{	
 			allTiles[9*m+108] = new tile(null, "Season", true);
-			tilesImage.getSubimage(11*width, 8*height +m*height, width, height);
+			allTiles[9*m+108].setImage(new ImageIcon(tilesImage.getSubimage(11*width, 8*height +m*height, width, height)));
 			allTiles[9*m+109] = new tile(null, "Flower", true);
-			tilesImage.getSubimage(11*width, 4*height + m*height, width, height);
+			allTiles[9*m+109].setImage(new ImageIcon(tilesImage.getSubimage(11*width, 4*height + m*height, width, height)));
 			
 			allTiles[9*m+110] = new tile(null, "North", true);
-			tilesImage.getSubimage(10*width, 8*height + m*height, width, height);
+			allTiles[9*m+110].setImage(getIcon(10*width, 8*height + m*height, width, height));
 			allTiles[9*m+111] = new tile(null, "South", true);
-			tilesImage.getSubimage(10*width, 4*height + m*height, width, height);
+			allTiles[9*m+111].setImage(getIcon(10*width, 4*height + m*height, width, height));
 			allTiles[9*m+112] = new tile(null, "East", true);
-			tilesImage.getSubimage(9*width, 4*height + m*height, width, height);
+			allTiles[9*m+112].setImage(getIcon(9*width, 4*height + m*height, width, height));
 			allTiles[9*m+113] = new tile(null, "West", true);
-			tilesImage.getSubimage(9*width, 8*height + m*height, width, height);
+			allTiles[9*m+113].setImage(getIcon(9*width, 8*height + m*height, width, height));
 			
 			allTiles[9*m+114] = new tile(null, "Red", true);
-			tilesImage.getSubimage(9*width, m*height, width, height);
+			allTiles[9*m+114].setImage(getIcon(9*width, m*height, width, height));
 			allTiles[9*m+115] = new tile(null, "Green", true);
-			tilesImage.getSubimage(10*width, m*height, width, height);
+			allTiles[9*m+115].setImage(getIcon(10*width, m*height, width, height));
 			allTiles[9*m+116] = new tile(null, "White", true);
-			tilesImage.getSubimage(11*width, m*height, width, height);
+			allTiles[9*m+116].setImage(getIcon(11*width, m*height, width, height));
+			
 		}
+	}
+	
+	private ImageIcon getIcon(int sw, int sh, int w , int h)
+	{
+		return (new ImageIcon(tilesImage.getSubimage(sw, sh, w, h)));
 	}
 
 	/**
 	 * (1) Adds the initialized tiles to positions (2) Adds the neighbors to each positino (3) assigns the physical location on screen
 	 */
-	private void initializePositions()
+	private void initializePositions(JFrame gameJFrame)
 	{
 		shuffleTiles();
 		positions = new boardPosition[currentArrangement.getHeight()][currentArrangement.getRow()][currentArrangement.getColumn()];
@@ -194,7 +201,7 @@ public class BoardController
 					else
 					{
 						// initializes the positions, sets whether playable, and give physical position on the GUI
-						positions[l][r][c] = new boardPosition(allTiles[counter]);
+						positions[l][r][c] = new boardPosition(allTiles[counter], gameJFrame);
 						counter++;
 						positions[l][r][c].setPlayable(currentArrangement.getPosition(r, c, l));
 						positions[l][r][c].setPosition(width*r, height*c, l);
@@ -289,7 +296,28 @@ public class BoardController
         gameContentPane = gameJFrame.getContentPane();
         gameContentPane.setLayout(null); // not need layout, will use absolute system
         gameContentPane.setBackground(Color.gray);
-        gameJFrame.setVisible(true);
+        gameJFrame.setVisible(true);        
+    }
+    
+    private void drawBoard()
+    {
+    	for(int l = 0; l < 1; l++)
+		{
+			// loop over the rows
+			for(int r = 0; r < positions[l].length; r++)
+			{
+				
+				// loop over the columns
+				for(int c = 0; c < positions[l][r].length; c++)
+				{
+					
+					if(positions[l][r][c] != null)
+					{
+						positions[l][r][c].drawPosition();
+					}
+				}
+			}
+		}
     }
     
     
