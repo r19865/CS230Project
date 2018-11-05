@@ -1,10 +1,12 @@
 import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
+
 public class tile implements Comparable<tile>
 {
-	BufferedImage image;
-	String type;
-	Boolean onBoard;
+	private ImageIcon image;
+	private String type;
+	private Boolean onBoard;
 	
 	tile()
 	{
@@ -13,7 +15,7 @@ public class tile implements Comparable<tile>
 		onBoard=false;
 	}
 	
-	tile (BufferedImage myImage, String tileType, Boolean isItOnBoard)
+	tile (ImageIcon myImage, String tileType, Boolean isItOnBoard)
 	{
 		this.image=myImage;
 		this.type=tileType;
@@ -27,7 +29,7 @@ public class tile implements Comparable<tile>
 		this.onBoard=t.onBoard;
 	}
 	
-	public BufferedImage getImage()
+	public ImageIcon getImage()
 	{
 		return image;
 	}
@@ -43,7 +45,7 @@ public class tile implements Comparable<tile>
 	}
 	
 	
-	public void setImage(BufferedImage newImage)
+	public void setImage(ImageIcon newImage)
 	{
 		image= newImage;
 	}

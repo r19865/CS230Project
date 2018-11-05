@@ -1,3 +1,5 @@
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 public class boardPosition implements Comparable<boardPosition>{
 
@@ -9,9 +11,19 @@ public class boardPosition implements Comparable<boardPosition>{
 	private boardPosition westNeighbors;
 	private boardPosition belowNeighbors;
 	
-	public boardPosition(tile thisTile)
+	protected JFrame passedInJFrame;
+	protected JLabel positionJLabel;
+	
+	public boardPosition(tile thisTile, JFrame gameJFrame)
 	{
 		this.thisTile = thisTile;
+		this.passedInJFrame = gameJFrame;
+		
+		positionJLabel = new JLabel();
+		positionJLabel.setBounds (10, 10, 10, 10); // arbitrary, will change later
+        positionJLabel.setVisible(false);
+		positionJLabel.setIcon(thisTile.getImage());
+        passedInJFrame.getContentPane().add(positionJLabel);
 		
 		playable = false;
 		eastNeighbors = null;
@@ -192,5 +204,13 @@ public class boardPosition implements Comparable<boardPosition>{
     		
         return compare;
     }
+	
+	public void drawPosition(int startX, int startY)
+	{
+		// set bounds only accepts integers - positions are doubles....
+		System.out.println(thisTile.getType());
+		positionJLabel.setBounds(startX, startY, thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		positionJLabel.setVisible(true);
+	}
 	
 }
