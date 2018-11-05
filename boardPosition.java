@@ -3,7 +3,7 @@ import javax.swing.JLabel;
 
 public class boardPosition implements Comparable<boardPosition>{
 
-	private double[] position = new double[3];
+	private int[] position = new int[3];
 	private boolean playable;
 	
 	private tile thisTile;
@@ -35,22 +35,22 @@ public class boardPosition implements Comparable<boardPosition>{
 	///////////////// Get Methods //////////////////////////
 	/////////////////////////////////////////////////////////
 	
-	public double getX()
+	public int getX()
 	{
 		return position[0];
 	}
 	
-	public double getY()
+	public int getY()
 	{
 		return position[1];
 	}
 	
-	public double getZ()
+	public int getZ()
 	{
 		return position[2];
 	}
 	
-	public double[] getPosition() {
+	public int[] getPosition() {
 		return position;
 	}
 	
@@ -83,14 +83,14 @@ public class boardPosition implements Comparable<boardPosition>{
 	///////////////// Set Methods //////////////////////////
 	/////////////////////////////////////////////////////////
 
-	public void setPosition(double x, double y, double z)
+	public void setPosition(int x, int y, int z)
 	{
 		this.position[0] = x;
 		this.position[1] = y;
 		this.position[2] = z;
 	}
 	
-	public void setPosition(double[] position)
+	public void setPosition(int[] position)
 	{
 		if(position.length == 3) {
 			this.position = position;
@@ -205,11 +205,11 @@ public class boardPosition implements Comparable<boardPosition>{
         return compare;
     }
 	
-	public void drawPosition(int startX, int startY)
+	public void drawPosition()
 	{
 		// set bounds only accepts integers - positions are doubles....
 		System.out.println(thisTile.getType());
-		positionJLabel.setBounds(startX, startY, thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
 		positionJLabel.setVisible(true);
 	}
 	
