@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.border.Border;
 
-public class BoardController 
+public class BoardController implements MouseListener
 {
 	
 	private final int TOTAL_TILES= 144;
@@ -25,6 +27,7 @@ public class BoardController
 	
 	private tile allTiles[]= new tile[TOTAL_TILES];
 	private boardPosition[][][] positions;
+	private boardPosition[] selectedPositions = new boardPosition[2];
 	
 	//private String[] arrangmentFiles = new String[NUMBER_OF_ARRANGEMENTS];
 	//private int indexOfCurrentArrangement = 0;
@@ -38,6 +41,8 @@ public class BoardController
     private int width;
     private int height;
 	private Border border = BorderFactory.createLineBorder(Color.BLUE, 5);
+	private int xMouseOffsetToContentPaneFromJFrame = 0;
+    private int yMouseOffsetToContentPaneFromJFrame = 0;
 
 	public static void main(String[] args) 
 	{
@@ -277,7 +282,7 @@ public class BoardController
 	   while (counter<validTiles.size()-1)
 	   {
 		   mySpot=validTiles.get(counter);
-		   if (mySpot.getThisTile().getType().equals(validTiles.get(counter+1).getThisTile().getType()))
+		   if (mySpot.equals(validTiles.get(counter+1)))
 		   {
 			   validPair++;
 			   counter=counter+2;
@@ -299,7 +304,14 @@ public class BoardController
         gameContentPane = gameJFrame.getContentPane();
         gameContentPane.setLayout(null); // not need layout, will use absolute system
         gameContentPane.setBackground(Color.gray);
-        gameJFrame.setVisible(true);        
+        gameJFrame.setVisible(true);  
+
+        // Event mouse position is given relative to JFrame, where dolphin's image in JLabel is given relative to ContentPane,
+        //  so adjust for the border
+        int borderWidth = (width - gameContentPane.getWidth())/2;  // 2 since border on either side
+        xMouseOffsetToContentPaneFromJFrame = borderWidth;
+        yMouseOffsetToContentPaneFromJFrame = height - gameContentPane.getHeight()-borderWidth; // assume side border = bottom border; ignore title bar
+
     }
     
     private void drawBoard()
@@ -325,6 +337,74 @@ public class BoardController
 			}
 		}
     }
+    
+	@Override
+	public void mouseClicked(MouseEvent event) {
+
+		
+		// loop over the levels
+		for(int l = 0; l < positions.length; l++)
+		{
+			// loop over the rows
+			for(int r = 0; r < positions[l].length; r++)
+			{
+				
+				// loop over the columns
+				for(int c = 0; c < positions[l][r].length; c++)
+				{
+					
+					if(positions[l][r][c].wasSelected(event.getX() - xMouseOffsetToContentPaneFromJFrame, event.getY() - yMouseOffsetToContentPaneFromJFrame))
+					{
+						if(selectedPositions[0] == null)
+						{
+							selectedPositions[0] = positions[l][r][c];
+						}else 
+						{
+							selectedPositions[1] = positions[l][r][c];
+							c = positions[l][r].length;
+							r = positions[l].length;
+							l = positions.length;
+						}
+					}
+				}
+			}
+		}
+		
+		if(selectedPositions[0].equals(selectedPositions[0]))
+		{
+			// remove both tiles
+			selectedPositions[0].notifyNeighbors(false);
+			selectedPositions[1].notifyNeighbors(false);
+		}
+		 
+		// check if valid
+		selectedPositions[0] = null;
+		selectedPositions[1] = null;
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
     
     
 }
