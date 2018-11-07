@@ -12,8 +12,10 @@ import java.util.Collections;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.border.Border;
 
 public class BoardController 
 {
@@ -35,6 +37,7 @@ public class BoardController
     private BufferedImage tilesImage;
     private int width;
     private int height;
+	private Border border = BorderFactory.createLineBorder(Color.BLUE, 5);
 
 	public static void main(String[] args) 
 	{
@@ -301,7 +304,7 @@ public class BoardController
     
     private void drawBoard()
     {
-    	for(int l = 0; l < 1; l++)
+    	for(int l = 0; l < positions.length; l++)
 		{
 			// loop over the rows
 			for(int r = 0; r < positions[l].length; r++)
@@ -313,7 +316,10 @@ public class BoardController
 					
 					if(positions[l][r][c] != null)
 					{
-						positions[l][r][c].drawPosition();
+						if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
+							positions[l][r][c].drawPosition(border);
+						else
+							positions[l][r][c].drawPosition();
 					}
 				}
 			}
