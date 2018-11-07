@@ -12,8 +12,12 @@ import java.util.Collections;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 
 public class BoardController 
 {
@@ -296,7 +300,7 @@ public class BoardController
         gameContentPane = gameJFrame.getContentPane();
         gameContentPane.setLayout(null); // not need layout, will use absolute system
         gameContentPane.setBackground(Color.gray);
-        gameJFrame.setVisible(true);        
+        gameJFrame.setVisible(true);     
     }
     
     private void drawBoard()
