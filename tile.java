@@ -68,7 +68,7 @@ public class tile implements Comparable<tile>
 	
 	public boolean equals(tile other)
 	{
-		return toString().equals((other.toString()));
+		return type.equals(other.getType());
 	}
 	
 	public int compareTo(tile otherT) 
