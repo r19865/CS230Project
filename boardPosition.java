@@ -1,8 +1,6 @@
-import java.awt.Color;
-
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.border.Border;
 
 public class boardPosition implements Comparable<boardPosition>{
 
@@ -213,6 +211,15 @@ public class boardPosition implements Comparable<boardPosition>{
 		// set bounds only accepts integers - positions are doubles....
 		//System.out.println(thisTile.getType());
 		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		positionJLabel.setVisible(true);
+	}
+	
+	public void drawPosition(Border border)
+	{
+		// set bounds only accepts integers - positions are doubles....
+		System.out.println(thisTile.getType());
+		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		positionJLabel.setBorder(border);
 		positionJLabel.setVisible(true);
 		
 	}
