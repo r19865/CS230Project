@@ -1,5 +1,6 @@
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.border.Border;
 
 public class boardPosition implements Comparable<boardPosition>{
@@ -14,6 +15,7 @@ public class boardPosition implements Comparable<boardPosition>{
 	
 	protected JFrame passedInJFrame;
 	protected JLabel positionJLabel;
+	protected JLayeredPane layeredPane;
 	
 	public boardPosition(tile thisTile, JFrame gameJFrame)
 	{
@@ -25,6 +27,11 @@ public class boardPosition implements Comparable<boardPosition>{
         positionJLabel.setVisible(false);
 		positionJLabel.setIcon(thisTile.getImage());
         passedInJFrame.getContentPane().add(positionJLabel);
+		/*layeredPane = new JLayeredPane();
+		layeredPane.setBounds(10,10,10,10);
+		layeredPane.setVisible(false);
+		layeredPane.setPosition(thisTile.getImage(),thisTile.);*/
+       passedInJFrame.getContentPane().add(positionJLabel);
 		
 		playable = false;
 		eastNeighbors = null;
