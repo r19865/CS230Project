@@ -432,18 +432,18 @@ public class BoardController implements MouseListener
 					{
 						if(positions[l][r][c].wasSelected(event.getX() - xMouseOffsetToContentPaneFromJFrame, event.getY() - yMouseOffsetToContentPaneFromJFrame))
 						{
-//							System.out.println("Selected: " + l + " " + r + " " + c);
+							System.out.println("Selected: " + l + " " + r + " " + c);
 							if(selectedPositions[0] == null)
 							{
 								selectedPositions[0] = positions[l][r][c];
-//								System.out.println("Found First Tile");
+								System.out.println("Found First Tile");
 							}else 
 							{
 								selectedPositions[1] = positions[l][r][c];
 								c = positions[l][r].length-1;
 								r = positions[l].length-1;
 								l = positions.length-1;
-//								System.out.println("Found Second Tile");
+								System.out.println("Found Second Tile");
 							}
 						}
 					}
