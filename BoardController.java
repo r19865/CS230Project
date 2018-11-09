@@ -223,7 +223,7 @@ public class BoardController implements MouseListener
 						counter++;
 						positions[l][r][c].setPlayable(currentArrangement.getPosition(r, c, l));
 						positions[l][r][c].setPosition(width*r, height*c, l);
-						System.out.println(positions[l][r][c].toString() + " isPlayable" + currentArrangement.getPosition(r, c, l));
+//						System.out.println(positions[l][r][c].toString() + " isPlayable" + currentArrangement.getPosition(r, c, l));
 						if(positions[l][r][c].getPlayable())
 						{
 							validTiles.add(positions[l][r][c]);
@@ -316,7 +316,8 @@ public class BoardController implements MouseListener
         gameJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameContentPane = gameJFrame.getContentPane();
         gameContentPane.setLayout(null); // not need layout, will use absolute system
-        gameContentPane.setBackground(Color.gray);        
+        gameContentPane.setBackground(Color.gray);
+        gameContentPane.setBounds(10, 10, width-10, height-10);
         gameJFrame.addMouseListener(this);
 
         // Event mouse position is given relative to JFrame, where dolphin's image in JLabel is given relative to ContentPane,
@@ -370,20 +371,20 @@ public class BoardController implements MouseListener
 				{
 					if(positions[l][r][c] != null)
 					{
-						if(positions[l][r][c].wasSelected(event.getX() - xMouseOffsetToContentPaneFromJFrame, event.getY() - yMouseOffsetToContentPaneFromJFrame))
+						if(positions[l][r][c].wasSelected(event.getX(), event.getY()))
 						{
-//							System.out.println("Selected: " + l + " " + r + " " + c);
+							System.out.println("Selected: " + l + " " + r + " " + c);
 							if(selectedPositions[0] == null)
 							{
 								selectedPositions[0] = positions[l][r][c];
-//								System.out.println("Found First Tile");
+								System.out.println("Found First Tile");
 							}else 
 							{
 								selectedPositions[1] = positions[l][r][c];
 								c = positions[l][r].length-1;
 								r = positions[l].length-1;
 								l = positions.length-1;
-//								System.out.println("Found Second Tile");
+								System.out.println("Found Second Tile");
 							}
 						}
 					}
