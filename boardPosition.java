@@ -121,6 +121,8 @@ public class boardPosition implements Comparable<boardPosition>{
 		{
 			this.playable = true;
 		}
+		else
+			this.playable=false;
 	}
 	
 	public void setEastNeighbors(boardPosition eastNeighbors)
