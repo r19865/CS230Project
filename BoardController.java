@@ -43,6 +43,11 @@ public class BoardController implements MouseListener
     private int width;
     private int height;
 	private Border border = BorderFactory.createLineBorder(Color.BLUE, 5);
+	private Border borderYELLOW = BorderFactory.createLineBorder(Color.YELLOW, 5);
+	private Border borderRED = BorderFactory.createLineBorder(Color.RED, 5);
+	private Border borderGREEN = BorderFactory.createLineBorder(Color.GREEN, 5);
+	private Border borderCYAN = BorderFactory.createLineBorder(Color.CYAN, 5);
+
 	private int xMouseOffsetToContentPaneFromJFrame = 0;
     private int yMouseOffsetToContentPaneFromJFrame = 0;
 
@@ -324,7 +329,7 @@ public class BoardController implements MouseListener
     private void drawBoard()
     {
     	for(int l = positions.length-1; l > -1; l--)
-		{
+    	{
 			// loop over the rows
 			for(int r = 0; r < positions[l].length; r++)
 			{
@@ -347,7 +352,6 @@ public class BoardController implements MouseListener
 				}
 			}
 		}
-
     }
     
 	@Override

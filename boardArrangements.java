@@ -47,8 +47,8 @@ public class boardArrangements
 		BufferedReader br = new BufferedReader(reader);
 		String dimension= br.readLine();
 		String [] size=dimension.split(" ");
-		xsize=Integer.parseInt(size[0]);
-		ysize=Integer.parseInt(size[1]);
+		ysize=Integer.parseInt(size[0]);
+		xsize=Integer.parseInt(size[1]);
 		zsize=Integer.parseInt(size[2]);
 
 		layout = new int[xsize][ysize][zsize];
