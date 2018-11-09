@@ -345,74 +345,16 @@ public class BoardController implements MouseListener
 					{
 //					if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
 
-					if(positions[l][r][c].getPlayable())
-							positions[l][r][c].drawPosition(border);
-						else
-							positions[l][r][c].drawPosition();
-					}
-				}
-			}
-		}
-		}
-    	//for(int l = positions.length-1; l > -1; l--)
-    //	positions[1][1][1].drawPosition(borderYELLOW);
-   /* 	for(int l = 0; l < positions.length; l++)
-		{
-			// loop over the rows
-			for(int r = 0; r < positions[l].length; r++)
-			{
-				
-				// loop over the columns
-				for(int c = 0; c < positions[l][r].length; c++)
-				{
-					
-					if(positions[l][r][c] != null && l==0)
-					{
-						if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
-							positions[l][r][c].drawPosition(border);
-						else
-							positions[l][r][c].drawPosition();
-					}
-					if(positions[l][r][c] != null && l==1)
-					{
-						if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
-							positions[l][r][c].drawPosition(borderYELLOW);
-						else
-							positions[l][r][c].drawPosition();
-					}
-					if(positions[l][r][c] != null && l==2)
-					{
-						if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
-							positions[l][r][c].drawPosition(borderGREEN);
-						else
-							positions[l][r][c].drawPosition();
-					}
-					if(positions[l][r][c] != null && l==3)
-					{
-						if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
-							positions[l][r][c].drawPosition(borderRED);
-						else
-							positions[l][r][c].drawPosition();
-					}
-					if(positions[l][r][c] != null && l==4)
-					{
-						if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
-							positions[l][r][c].drawPosition(borderCYAN);
-=======
 						if(positions[l][r][c].getPlayable())
-						{
-							gameContentPane.add(positions[l][r][c].drawPosition(border),-1);
-						}
->>>>>>> 0cd9491ea9c3857688e59ad6454451faf9eee2f7
+								gameContentPane.add(positions[l][r][c].drawPosition(border),-1);
 						else
-							gameContentPane.add(positions[l][r][c].drawPosition(),-1);
+								gameContentPane.add(positions[l][r][c].drawPosition(),-1);
 					}
 				}
 			}
-<<<<<<< HEAD
-		}*/
-    	//positions[1][1][1].drawPosition(borderCYAN);
-    	//positions[0][1][1].drawPosition(borderGREEN);
+		}
+	}
+ 
     
     
 	@Override
