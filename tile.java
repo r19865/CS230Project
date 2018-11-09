@@ -63,12 +63,12 @@ public class tile implements Comparable<tile>
 	
 	public String toString()
 	{
-		return String.format("Tile Type: %s %n Is it on the board? %s%n ", type);
+		return String.format("Tile Type: %s %n Is it on the board? %s%n ", type, onBoard);
 	}
 	
 	public boolean equals(tile other)
 	{
-		return toString().equals((other.toString()));
+		return type.equals(other.getType());
 	}
 	
 	public int compareTo(tile otherT) 

@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.border.Border;
 
-public class BoardController 
+public class BoardController implements MouseListener
 {
 	
 	private final int TOTAL_TILES= 144;
@@ -25,6 +27,7 @@ public class BoardController
 	
 	private tile allTiles[]= new tile[TOTAL_TILES];
 	private boardPosition[][][] positions;
+	private boardPosition[] selectedPositions = new boardPosition[2];
 	
 	//private String[] arrangmentFiles = new String[NUMBER_OF_ARRANGEMENTS];
 	//private int indexOfCurrentArrangement = 0;
@@ -42,7 +45,10 @@ public class BoardController
 	private Border borderRED = BorderFactory.createLineBorder(Color.RED, 5);
 	private Border borderGREEN = BorderFactory.createLineBorder(Color.GREEN, 5);
 	private Border borderCYAN = BorderFactory.createLineBorder(Color.CYAN, 5);
-	
+
+	private int xMouseOffsetToContentPaneFromJFrame = 0;
+    private int yMouseOffsetToContentPaneFromJFrame = 0;
+
 	public static void main(String[] args) 
 	{
 		try {
@@ -189,6 +195,7 @@ public class BoardController
 		shuffleTiles();
 		positions = new boardPosition[currentArrangement.getHeight()][currentArrangement.getRow()][currentArrangement.getColumn()];
 		int counter = 0;
+		System.out.println(currentArrangement.getRow() + " " + currentArrangement.getColumn());
 		
 		// loop over the number of levels
 		for(int l = 0; l < currentArrangement.getHeight(); l++)
@@ -212,6 +219,7 @@ public class BoardController
 						counter++;
 						positions[l][r][c].setPlayable(currentArrangement.getPosition(r, c, l));
 						positions[l][r][c].setPosition(width*r, height*c, l);
+						System.out.println(positions[l][r][c].toString() + " isPlayable" + currentArrangement.getPosition(r, c, l));
 						if(positions[l][r][c].getPlayable())
 						{
 							validTiles.add(positions[l][r][c]);
@@ -283,7 +291,7 @@ public class BoardController
 	   while (counter<validTiles.size()-1)
 	   {
 		   mySpot=validTiles.get(counter);
-		   if (mySpot.getThisTile().getType().equals(validTiles.get(counter+1).getThisTile().getType()))
+		   if (mySpot.equals(validTiles.get(counter+1)))
 		   {
 			   validPair++;
 			   counter=counter+2;
@@ -305,13 +313,23 @@ public class BoardController
         gameContentPane = gameJFrame.getContentPane();
         gameContentPane.setLayout(null); // not need layout, will use absolute system
         gameContentPane.setBackground(Color.gray);
-        gameJFrame.setVisible(true);     
+        gameJFrame.setVisible(true);
+        gameJFrame.addMouseListener(this);
+
+        // Event mouse position is given relative to JFrame, where dolphin's image in JLabel is given relative to ContentPane,
+        //  so adjust for the border
+        int borderWidth = (width - gameContentPane.getWidth())/2;  // 2 since border on either side
+        xMouseOffsetToContentPaneFromJFrame = borderWidth;
+        yMouseOffsetToContentPaneFromJFrame = height - gameContentPane.getHeight()-borderWidth; // assume side border = bottom border; ignore title bar
     }
     
     private void drawBoard()
     {
     	
     	/*for(int l = positions.length-1; l > -1; l--)
+=======
+    	for(int l = 0; l < positions.length; l++)
+>>>>>>> 825be1821a2633a95e037eaf5e22c473f9bcc97c
 		{
 			// loop over the rows
 			for(int r = 0; r < positions[l].length; r++)
@@ -323,7 +341,9 @@ public class BoardController
 					
 					if(positions[l][r][c] != null)
 					{
-						if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
+//						if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
+						
+						if(positions[l][r][c].getPlayable())
 							positions[l][r][c].drawPosition(border);
 						else
 							positions[l][r][c].drawPosition();
@@ -384,6 +404,83 @@ public class BoardController
     	//positions[1][1][1].drawPosition(borderCYAN);
     	//positions[0][1][1].drawPosition(borderGREEN);
     }
+    
+	@Override
+	public void mouseClicked(MouseEvent event) {
+//		System.out.println(positions[0][0][0].wasSelected(event.getX() - xMouseOffsetToContentPaneFromJFrame, event.getY() - yMouseOffsetToContentPaneFromJFrame));
+		
+		// loop over the levels
+		for(int l = 0; l < positions.length; l++)
+		{
+			// loop over the rows
+			for(int r = 0; r < positions[l].length; r++)
+			{
+				
+				// loop over the columns
+				for(int c = 0; c < positions[l][r].length; c++)
+				{
+					if(positions[l][r][c] != null)
+					{
+						if(positions[l][r][c].wasSelected(event.getX() - xMouseOffsetToContentPaneFromJFrame, event.getY() - yMouseOffsetToContentPaneFromJFrame))
+						{
+							System.out.println("Selected: " + l + " " + r + " " + c);
+							if(selectedPositions[0] == null)
+							{
+								selectedPositions[0] = positions[l][r][c];
+								System.out.println("Found First Tile");
+							}else 
+							{
+								selectedPositions[1] = positions[l][r][c];
+								c = positions[l][r].length-1;
+								r = positions[l].length-1;
+								l = positions.length-1;
+								System.out.println("Found Second Tile");
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if(selectedPositions[1] != null) {
+			if(selectedPositions[0].equals(selectedPositions[1]))
+			{
+				selectedPositions[0].remove();
+				selectedPositions[1].remove();
+				
+				selectedPositions[0].notifyNeighbors(false);
+				selectedPositions[1].notifyNeighbors(false);
+			}
+			// check if valid
+			selectedPositions[0] = null;
+			selectedPositions[1] = null;
+		} 
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
     
     
 }

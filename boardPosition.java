@@ -167,9 +167,33 @@ public class boardPosition implements Comparable<boardPosition>{
 		return newTile;
 	}
 	
-	public void render()
+	public int compareTo(boardPosition bp) 
+    {
+    	int compare= getThisTile().getType().compareTo(bp.getThisTile().getType());
+    		
+        return compare;
+    }
+	
+	public boolean equals(boardPosition position)
 	{
-		
+		return (thisTile.equals(position.getThisTile()));
+	}
+	
+	public void drawPosition()
+	{
+		// set bounds only accepts integers - positions are doubles....
+		//System.out.println(thisTile.getType());
+		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		positionJLabel.setVisible(true);
+	}
+	
+	public void drawPosition(Border border)
+	{
+		// set bounds only accepts integers - positions are doubles....
+		//System.out.println(thisTile.getType());
+		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		positionJLabel.setBorder(border);
+		positionJLabel.setVisible(true);
 	}
 	
 	public void notifyNeighbors(boolean onBoard)
@@ -188,9 +212,21 @@ public class boardPosition implements Comparable<boardPosition>{
 	}
 	
 	
+	public boolean wasSelected(int x, int y)
+	{
+		return (position[0] < x && position[0]+thisTile.getImage().getIconWidth() > x && position[1] < y && position[1]+thisTile.getImage().getIconHeight() > y && playable);
+	}
+	
+	public void remove()
+	{
+		positionJLabel.setVisible(false);
+		playable = false;
+		thisTile.setOnBoard(false);
+	}
+	
 	public String toString()
 	{
-		return String.format("%s %nX: %f Y: %f Z: %f", thisTile.getType(), position[0], position[1], position[2]);
+		return String.format("X: %d Y: %d Z: %d", position[0]/62, position[1]/82, position[2]);
 	}
 	
 	/////////////////////////////////////////////////////////
@@ -204,31 +240,6 @@ public class boardPosition implements Comparable<boardPosition>{
 		{
 			belowNeighbors.setPlayable(true);
 		}
-	}
-	
-	public int compareTo(boardPosition bp) 
-    {
-    		int compare= getThisTile().getType().compareTo(bp.getThisTile().getType());
-    		
-        return compare;
-    }
-	
-	public void drawPosition()
-	{
-		// set bounds only accepts integers - positions are doubles....
-		//System.out.println(thisTile.getType());
-		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
-		positionJLabel.setVisible(true);
-	}
-	
-	public void drawPosition(Border border)
-	{
-		// set bounds only accepts integers - positions are doubles....
-		System.out.println(thisTile.getType());
-		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
-		positionJLabel.setBorder(border);
-		positionJLabel.setVisible(true);
-		
 	}
 	
 }
