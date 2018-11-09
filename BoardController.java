@@ -17,6 +17,8 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 public class BoardController implements MouseListener
@@ -65,6 +67,8 @@ public class BoardController implements MouseListener
 		initializeTiles();
 		initializePositions(gameJFrame);
 		drawBoard();
+        gameJFrame.setVisible(true);
+
 
 		findValidPairs();
 		
@@ -190,7 +194,7 @@ public class BoardController implements MouseListener
 		shuffleTiles();
 		positions = new boardPosition[currentArrangement.getHeight()][currentArrangement.getRow()][currentArrangement.getColumn()];
 		int counter = 0;
-		System.out.println(currentArrangement.getRow() + " " + currentArrangement.getColumn());
+//		System.out.println(currentArrangement.getRow() + " " + currentArrangement.getColumn());
 		
 		// loop over the number of levels
 		for(int l = 0; l < currentArrangement.getHeight(); l++)
@@ -307,8 +311,7 @@ public class BoardController implements MouseListener
         gameJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameContentPane = gameJFrame.getContentPane();
         gameContentPane.setLayout(null); // not need layout, will use absolute system
-        gameContentPane.setBackground(Color.gray);
-        gameJFrame.setVisible(true);
+        gameContentPane.setBackground(Color.gray);        
         gameJFrame.addMouseListener(this);
 
         // Event mouse position is given relative to JFrame, where dolphin's image in JLabel is given relative to ContentPane,
@@ -320,7 +323,7 @@ public class BoardController implements MouseListener
     
     private void drawBoard()
     {
-    	for(int l = 0; l < positions.length; l++)
+    	for(int l = positions.length-1; l > -1; l--)
 		{
 			// loop over the rows
 			for(int r = 0; r < positions[l].length; r++)
@@ -335,13 +338,16 @@ public class BoardController implements MouseListener
 //						if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
 						
 						if(positions[l][r][c].getPlayable())
-							positions[l][r][c].drawPosition(border);
+						{
+							gameContentPane.add(positions[l][r][c].drawPosition(border),-1);
+						}
 						else
-							positions[l][r][c].drawPosition();
+							gameContentPane.add(positions[l][r][c].drawPosition(),-1);
 					}
 				}
 			}
 		}
+
     }
     
 	@Override
@@ -362,18 +368,18 @@ public class BoardController implements MouseListener
 					{
 						if(positions[l][r][c].wasSelected(event.getX() - xMouseOffsetToContentPaneFromJFrame, event.getY() - yMouseOffsetToContentPaneFromJFrame))
 						{
-							System.out.println("Selected: " + l + " " + r + " " + c);
+//							System.out.println("Selected: " + l + " " + r + " " + c);
 							if(selectedPositions[0] == null)
 							{
 								selectedPositions[0] = positions[l][r][c];
-								System.out.println("Found First Tile");
+//								System.out.println("Found First Tile");
 							}else 
 							{
 								selectedPositions[1] = positions[l][r][c];
 								c = positions[l][r].length-1;
 								r = positions[l].length-1;
 								l = positions.length-1;
-								System.out.println("Found Second Tile");
+//								System.out.println("Found Second Tile");
 							}
 						}
 					}

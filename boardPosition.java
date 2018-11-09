@@ -1,3 +1,4 @@
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.border.Border;
@@ -172,21 +173,27 @@ public class boardPosition implements Comparable<boardPosition>{
 		return (thisTile.equals(position.getThisTile()));
 	}
 	
-	public void drawPosition()
+	public JLabel drawPosition()
 	{
 		// set bounds only accepts integers - positions are doubles....
 		//System.out.println(thisTile.getType());
 		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		positionJLabel.setBorder(null);
 		positionJLabel.setVisible(true);
+		
+		return positionJLabel;
+				
 	}
 	
-	public void drawPosition(Border border)
+	public JLabel drawPosition(Border border)
 	{
 		// set bounds only accepts integers - positions are doubles....
 		//System.out.println(thisTile.getType());
 		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
 		positionJLabel.setBorder(border);
 		positionJLabel.setVisible(true);
+		
+		return positionJLabel;
 	}
 	
 	public void notifyNeighbors(boolean onBoard)
