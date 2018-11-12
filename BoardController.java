@@ -318,13 +318,14 @@ public class BoardController implements MouseListener
         gameContentPane.setLayout(null); // not need layout, will use absolute system
         gameContentPane.setBackground(Color.gray);
         gameContentPane.setBounds(10, 10, width-10, height-10);
-        gameJFrame.addMouseListener(this);
+        gameContentPane.addMouseListener(this);
 
         // Event mouse position is given relative to JFrame, where dolphin's image in JLabel is given relative to ContentPane,
         //  so adjust for the border
         int borderWidth = (width - gameContentPane.getWidth())/2;  // 2 since border on either side
         xMouseOffsetToContentPaneFromJFrame = borderWidth;
         yMouseOffsetToContentPaneFromJFrame = height - gameContentPane.getHeight()-borderWidth; // assume side border = bottom border; ignore title bar
+        System.out.println(xMouseOffsetToContentPaneFromJFrame + " " + yMouseOffsetToContentPaneFromJFrame);
     }
     
     private void drawBoard()
@@ -343,23 +344,55 @@ public class BoardController implements MouseListener
 					
 					if(positions[l][r][c] != null)
 					{
-//					if(positions[l][r][c].getEastNeighbors() == null || positions[l][r][c].getWestNeighbors() == null)
-
-						if(positions[l][r][c].getPlayable())
+						if(positions[l][r][c].getThisTile().getOnBoard())
+						{
+							if(positions[l][r][c].getPlayable())
+							{
 								gameContentPane.add(positions[l][r][c].drawPosition(border),-1);
-						else
+							}
+							else
+							{
 								gameContentPane.add(positions[l][r][c].drawPosition(),-1);
+							}
+						}
 					}
 				}
 			}
 		}
 	}
- 
     
+   
+    private void afterMatch(int index)
+    {
+//    	selectedPositions[index].remove();
+    	gameContentPane.remove(selectedPositions[index].getJLabel());
+		
+		validTiles.remove(selectedPositions[index]);
+		
+		selectedPositions[index].notifyNeighbors(false);
+	
+		if(selectedPositions[index].getEastNeighbors() != null)
+		{
+			validTiles.add(selectedPositions[index].getEastNeighbors());
+			gameContentPane.remove(selectedPositions[index].getEastNeighbors().getJLabel());
+			gameContentPane.add(selectedPositions[index].getEastNeighbors().drawPosition(border),-1);
+		}
+		if(selectedPositions[index].getWestNeighbors() != null)
+		{
+			validTiles.add(selectedPositions[index].getWestNeighbors());
+			gameContentPane.remove(selectedPositions[index].getWestNeighbors().getJLabel());
+			gameContentPane.add(selectedPositions[index].getWestNeighbors().drawPosition(border),-1);
+		}
+		if(selectedPositions[index].getPlayableBelowNeighbors() != null)
+		{
+			validTiles.add(selectedPositions[index].getPlayableBelowNeighbors());
+			gameContentPane.remove(selectedPositions[index].getBelowNeighbors().getJLabel());
+			gameContentPane.add(selectedPositions[index].getBelowNeighbors().drawPosition(border),-1);
+		}
+    }
     
 	@Override
 	public void mouseClicked(MouseEvent event) {
-//		System.out.println(positions[0][0][0].wasSelected(event.getX() - xMouseOffsetToContentPaneFromJFrame, event.getY() - yMouseOffsetToContentPaneFromJFrame));
 		
 		// loop over the levels
 		for(int l = 0; l < positions.length; l++)
@@ -373,20 +406,21 @@ public class BoardController implements MouseListener
 				{
 					if(positions[l][r][c] != null)
 					{
-						if(positions[l][r][c].wasSelected(event.getX(), event.getY()))
+						if(positions[l][r][c].wasSelected(event.getX()-xMouseOffsetToContentPaneFromJFrame, event.getY() - yMouseOffsetToContentPaneFromJFrame))
 						{
-							System.out.println("Selected: " + l + " " + r + " " + c);
+//							System.out.println(event.getX() + " " + event.getY());
+//							System.out.println("Selected: " + positions[l][r][c].toString());
 							if(selectedPositions[0] == null)
 							{
 								selectedPositions[0] = positions[l][r][c];
-								System.out.println("Found First Tile");
-							}else 
+//								System.out.println("Found First Tile");
+							}else if (selectedPositions[0].differentCoordinates(positions[l][r][c]))
 							{
 								selectedPositions[1] = positions[l][r][c];
 								c = positions[l][r].length-1;
 								r = positions[l].length-1;
 								l = positions.length-1;
-								System.out.println("Found Second Tile");
+//								System.out.println("Found Second Tile");
 							}
 						}
 					}
@@ -397,11 +431,10 @@ public class BoardController implements MouseListener
 		if(selectedPositions[1] != null) {
 			if(selectedPositions[0].equals(selectedPositions[1]))
 			{
-				selectedPositions[0].remove();
-				selectedPositions[1].remove();
-				
-				selectedPositions[0].notifyNeighbors(false);
-				selectedPositions[1].notifyNeighbors(false);
+				afterMatch(0);
+				afterMatch(1);
+		    	gameContentPane.repaint();
+
 			}
 			// check if valid
 			selectedPositions[0] = null;
@@ -411,8 +444,7 @@ public class BoardController implements MouseListener
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
+	public void mousePressed(MouseEvent event) {
 		
 	}
 

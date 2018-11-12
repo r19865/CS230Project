@@ -75,17 +75,39 @@ public class boardPosition implements Comparable<boardPosition>{
 	
 	public boardPosition getEastNeighbors()
 	{
-		return eastNeighbors;
+		if(eastNeighbors != null)
+			return eastNeighbors;
+		else
+			return null;
 	}
 	
 	public boardPosition getWestNeighbors()
 	{
-		return westNeighbors;
+		if(westNeighbors != null)
+			return westNeighbors;
+		else
+			return null;
 	}
 	
 	public boardPosition getBelowNeighbors()
 	{
-		return belowNeighbors;
+		if(belowNeighbors != null)
+			return belowNeighbors;
+		else 
+			return null;
+	}
+	
+	public boardPosition getPlayableBelowNeighbors()
+	{
+		if(belowNeighbors != null && belowNeighbors.getPlayable())
+			return belowNeighbors;
+		else 
+			return null;
+	}
+	
+	public JLabel getJLabel()
+	{
+		return positionJLabel;
 	}
 	
 	/////////////////////////////////////////////////////////
@@ -179,7 +201,12 @@ public class boardPosition implements Comparable<boardPosition>{
 	
 	public boolean equals(boardPosition position)
 	{
-		return (thisTile.equals(position.getThisTile()));
+		return (thisTile.equals(position.getThisTile()) && (this.getX() != position.getX() || this.getY() != position.getY()));
+	}
+	
+	public boolean differentCoordinates(boardPosition position)
+	{
+		return (this.getX() != position.getX() || this.getY() != position.getY() || this.getZ() != position.getZ());
 	}
 	
 	public JLabel drawPosition()
@@ -218,8 +245,7 @@ public class boardPosition implements Comparable<boardPosition>{
 			if(belowNeighbors != null)
 				checkBelowNeighbors();
 		}
-	}
-	
+	}	
 	
 	public boolean wasSelected(int x, int y)
 	{
@@ -235,7 +261,7 @@ public class boardPosition implements Comparable<boardPosition>{
 	
 	public String toString()
 	{
-		return String.format("X: %d Y: %d Z: %d", position[0]/62, position[1]/82, position[2]);
+		return String.format("Type: %s X: %d Y: %d Z: %d", thisTile.getType(), position[0]/62, position[1]/82, position[2]);
 	}
 	
 	/////////////////////////////////////////////////////////
@@ -245,9 +271,12 @@ public class boardPosition implements Comparable<boardPosition>{
 		
 	private void checkBelowNeighbors()
 	{
-		if(belowNeighbors.getEastNeighbors().getZ() != belowNeighbors.getZ() || belowNeighbors.getWestNeighbors().getZ() != belowNeighbors.getZ())
+		if(belowNeighbors.getEastNeighbors() != null && belowNeighbors.getWestNeighbors() != null)
 		{
-			belowNeighbors.setPlayable(true);
+			if(belowNeighbors.getEastNeighbors().getZ() != belowNeighbors.getZ() || belowNeighbors.getWestNeighbors().getZ() != belowNeighbors.getZ())
+			{
+				belowNeighbors.setPlayable(true);
+			}
 		}
 	}
 	
