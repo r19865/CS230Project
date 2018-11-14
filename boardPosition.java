@@ -27,6 +27,8 @@ public class boardPosition implements Comparable<boardPosition>{
 	protected JLayeredPane layeredPane;
 	protected JLabel shadow;
 	
+	protected int shadowOffset = 3;
+	
 	public boardPosition(tile thisTile, JFrame gameJFrame)
 	{
 		this.thisTile = thisTile;
@@ -251,9 +253,9 @@ public class boardPosition implements Comparable<boardPosition>{
 				
 	}
 	
-	public JLabel drawPositionWithBorder(int buffer, int xOffset, int YOffset)
+	public JLabel drawPositionWithBorder()
 	{
-		positionJLabel.setBounds(position[0]+ xOffset +buffer*(position[0]/thisTile.getImage().getIconWidth()), position[1] + YOffset +buffer*(position[1]/thisTile.getImage().getIconHeight()), thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
 		Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.MAGENTA};
 		
 		Border raisedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()], colors[getZ()]);
@@ -264,20 +266,23 @@ public class boardPosition implements Comparable<boardPosition>{
 		return positionJLabel;
 	}
 	
-	public JLabel drawShadow(int buffer, int arrangementWidth, int arrangementHeightm, int XOffset, int YOffset)
+	public JLabel drawShadow(int arrangementWidth, int arrangementHeightm)
 	{
-		if(playable && position[0]/thisTile.getImage().getIconWidth() > arrangementWidth/2)
-			shadow.setBounds(XOffset + position[0]+  buffer*(position[0]/thisTile.getImage().getIconWidth()), YOffset + position[1] + buffer*(position[1]/thisTile.getImage().getIconHeight()), thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
-		else if(playable && position[0]/thisTile.getImage().getIconWidth() < arrangementWidth/2)
-			shadow.setBounds(XOffset + position[0] - buffer + buffer*(position[0]/thisTile.getImage().getIconWidth()), YOffset + position[1] - buffer + buffer*(position[1]/thisTile.getImage().getIconHeight()), thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+//		if(playable)
+//			shadow.setBounds(position[0]+shadowOffset, position[1]+shadowOffset, thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
 
+			
+		if(playable && position[0]/thisTile.getImage().getIconWidth() > arrangementWidth/2)
+			shadow.setBounds(position[0], position[1] , thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		else if(playable && position[0]/thisTile.getImage().getIconWidth() < arrangementWidth/2)
+		shadow.setBounds(position[0], position[1] , thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		
 		shadow.setOpaque(true);
 		shadow.setBackground(new Color(64,64,64));
 		shadow.setVisible(true);
 			
 		return shadow;
 	}
-	
 	
 	public void notifyNeighbors(boolean onBoard)
 	{
@@ -308,7 +313,16 @@ public class boardPosition implements Comparable<boardPosition>{
 	
 	public boolean wasSelected(int x, int y)
 	{
-		return (position[0] < x && position[0]+thisTile.getImage().getIconWidth() > x && position[1] < y && position[1]+thisTile.getImage().getIconHeight() > y && playable);
+		boolean selected = (position[0] < x && position[0]+thisTile.getImage().getIconWidth() > x && position[1] < y && position[1]+thisTile.getImage().getIconHeight() > y && playable);
+		
+		if(selected)
+		{
+			shadow.setBackground(Color.YELLOW);
+			positionJLabel.repaint();
+			shadow.repaint();
+		}
+		
+		return selected;
 	}
 	
 	public void remove()

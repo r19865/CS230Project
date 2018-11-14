@@ -54,14 +54,14 @@ public class BoardController implements MouseListener
 
 	private int xMouseOffsetToContentPaneFromJFrame = 0;
     private int yMouseOffsetToContentPaneFromJFrame = 0;
-    private int printBuffer = 1;
+    private int printBuffer = 4;
     private int XOffset = 25;
     private int YOffset = 25;
 
 	public static void main(String[] args) 
 	{
 		try {
-			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 700, 700, 20, 20);
+			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 750, 700, 20, 20);
 		}catch(IOException e)
 		{}
 	}
@@ -165,7 +165,7 @@ public class BoardController implements MouseListener
 						positions[l][r][c] = new boardPosition(allTiles[counter], gameJFrame);
 						counter++;
 						positions[l][r][c].setPlayable(currentArrangement.getPosition(r, c, l));
-						positions[l][r][c].setPosition(width*r, height*c, l);
+						positions[l][r][c].setPosition(width*r + r*printBuffer + XOffset, height*c + c*printBuffer + YOffset, l);
 //						System.out.println(positions[l][r][c].toString() + " isPlayable" + currentArrangement.getPosition(r, c, l));
 						if(positions[l][r][c].getPlayable())
 						{
@@ -297,11 +297,11 @@ public class BoardController implements MouseListener
 					{
 						if(positions[l][r][c].getThisTile().getOnBoard())
 						{
-							gameContentPane.add(positions[l][r][c].drawPositionWithBorder(printBuffer, XOffset, YOffset),-1);
-//							if(positions[l][r][c].getPlayable())
-//							{
-								gameContentPane.add(positions[l][r][c].drawShadow(printBuffer+1, currentArrangement.getRow(), currentArrangement.getColumn(), XOffset, YOffset),-1);
-//							}
+							gameContentPane.add(positions[l][r][c].drawPositionWithBorder(),-1);
+							if(positions[l][r][c].getPlayable())
+							{
+								gameContentPane.add(positions[l][r][c].drawShadow(currentArrangement.getRow(), currentArrangement.getColumn()),-1);
+							}
 						}
 					}
 				}
