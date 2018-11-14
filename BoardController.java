@@ -54,7 +54,9 @@ public class BoardController implements MouseListener
 
 	private int xMouseOffsetToContentPaneFromJFrame = 0;
     private int yMouseOffsetToContentPaneFromJFrame = 0;
-    private int printBuffer = 3;
+    private int printBuffer = 1;
+    private int XOffset = 25;
+    private int YOffset = 25;
 
 	public static void main(String[] args) 
 	{
@@ -267,7 +269,7 @@ public class BoardController implements MouseListener
         gameJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameContentPane = gameJFrame.getContentPane();
         gameContentPane.setLayout(null); // not need layout, will use absolute system
-        gameContentPane.setBackground(Color.WHITE);
+        gameContentPane.setBackground(Color.LIGHT_GRAY);
         gameContentPane.setBounds(10, 10, width-10, height-10);
         gameContentPane.addMouseListener(this);
 
@@ -295,11 +297,11 @@ public class BoardController implements MouseListener
 					{
 						if(positions[l][r][c].getThisTile().getOnBoard())
 						{
-							gameContentPane.add(positions[l][r][c].drawPosition(printBuffer),-1);
-							if(positions[l][r][c].getPlayable())
-							{
-								gameContentPane.add(positions[l][r][c].drawShadow(printBuffer),-1);
-							}
+							gameContentPane.add(positions[l][r][c].drawPositionWithBorder(printBuffer, XOffset, YOffset),-1);
+//							if(positions[l][r][c].getPlayable())
+//							{
+								gameContentPane.add(positions[l][r][c].drawShadow(printBuffer+1, currentArrangement.getRow(), currentArrangement.getColumn(), XOffset, YOffset),-1);
+//							}
 						}
 					}
 				}

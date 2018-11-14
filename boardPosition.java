@@ -251,49 +251,29 @@ public class boardPosition implements Comparable<boardPosition>{
 				
 	}
 	
-	public JLabel drawPositionWithBorder(int buffer)
+	public JLabel drawPositionWithBorder(int buffer, int xOffset, int YOffset)
 	{
-		// set bounds only accepts integers - positions are doubles....
-		//System.out.println(thisTile.getType());
-		positionJLabel.setBounds(position[0]+ buffer*(position[0]/thisTile.getImage().getIconWidth()), position[1] + buffer*(position[1]/thisTile.getImage().getIconHeight()), thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
-		Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.DARK_GRAY};
+		positionJLabel.setBounds(position[0]+ xOffset +buffer*(position[0]/thisTile.getImage().getIconWidth()), position[1] + YOffset +buffer*(position[1]/thisTile.getImage().getIconHeight()), thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.MAGENTA};
 		
-		if(playable)
-		{
-			Border raisedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()], colors[getZ()]);
-			positionJLabel.setBorder(raisedBorder);
-		}
+		Border raisedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()], colors[getZ()]);
+		positionJLabel.setBorder(raisedBorder);
 		positionJLabel.setVisible(true);
 
 		
 		return positionJLabel;
 	}
 	
-	public JLabel drawShadow(int buffer)
+	public JLabel drawShadow(int buffer, int arrangementWidth, int arrangementHeightm, int XOffset, int YOffset)
 	{
-//		if (position[2]!=0)
-//		{
-//			System.out.println(thisTile.getType()+ " "+ position[0]+ " "+ position[1]+" "+position[2]+" Height greater than 0");
-			shadow.setBounds(position[0]+6+ buffer*(position[0]/thisTile.getImage().getIconWidth()), position[1] + buffer*(position[1]/thisTile.getImage().getIconHeight()) + 8, thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
-			shadow.setOpaque(true);
-			shadow.setBackground(new Color(192- 30*getZ(), 192-30*getZ(), 192-30*getZ()));
-			shadow.setVisible(true);
-//		}
-//		else
-//		{
-//			System.out.println(thisTile.getType()+ " "+position[0]+" "+position[1]+" "+position[2]+" Height 0");
-//			shadow.setVisible(false);
-//		}
-		/*
-		else
-		{
-			shadow.setBounds(position[0]+2, position[1]+2, thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
-			shadow.setOpaque(true);
-			shadow.setBackground(Color.WHITE);
-			shadow.setVisible(true);
-		}*/
-//			shadow.setIcon(new ImageIcon(createShadow()));
-//			shadow.setVisible(true);
+		if(playable && position[0]/thisTile.getImage().getIconWidth() > arrangementWidth/2)
+			shadow.setBounds(XOffset + position[0]+  buffer*(position[0]/thisTile.getImage().getIconWidth()), YOffset + position[1] + buffer*(position[1]/thisTile.getImage().getIconHeight()), thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+		else if(playable && position[0]/thisTile.getImage().getIconWidth() < arrangementWidth/2)
+			shadow.setBounds(XOffset + position[0] - buffer + buffer*(position[0]/thisTile.getImage().getIconWidth()), YOffset + position[1] - buffer + buffer*(position[1]/thisTile.getImage().getIconHeight()), thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
+
+		shadow.setOpaque(true);
+		shadow.setBackground(new Color(64,64,64));
+		shadow.setVisible(true);
 			
 		return shadow;
 	}
