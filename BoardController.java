@@ -54,7 +54,7 @@ public class BoardController implements MouseListener
 	public static void main(String[] args) 
 	{
 		try {
-			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 1000, 1000, 20, 20);
+			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 700, 700, 20, 20);
 		}catch(IOException e)
 		{}
 	}
@@ -196,12 +196,12 @@ public class BoardController implements MouseListener
 	 */
 	private void initializePositions(JFrame gameJFrame)
 	{
-		shuffleTiles();
+//		shuffleTiles();
 		positions = new boardPosition[currentArrangement.getHeight()][currentArrangement.getRow()][currentArrangement.getColumn()];
 		int counter = 0;
 //		System.out.println(currentArrangement.getRow() + " " + currentArrangement.getColumn());
 		
-		// loop over the number of levels
+		// loop over the number of levels currentArrangement.getHeight()
 		for(int l = 0; l < currentArrangement.getHeight(); l++)
 		{
 			// loop over the rows
@@ -233,23 +233,33 @@ public class BoardController implements MouseListener
 						
 						if(r != 0) // if not the first column, link to the position on the left
 						{
-							//System.out.println("(" + l + "," + r + "," + c + ") West: " + l + "" + r + "" + (c-1));
+//							System.out.println("(" + l + "," + r + "," + c + ") West: " + l + "" + r + "" + (c-1));
 							if(positions[l][r-1][c] != null)
+							{
 								//positions[l][r][c].setWestNeighbors(positions[l][r][c-1]);
 								positions[l][r][c].setWestNeighbors(positions[l][r-1][c]);
+//								System.out.println(positions[l][r][c].toString() + " West N: " + positions[l][r-1][c].toString());
+							}
 						}
-						if(r != currentArrangement.getRow()-1 ) // if first column, link prior position to this position (right neighbor)
+						if(r != 0) //currentArrangement.getRow()-1 ) // if first column, link prior position to this position (right neighbor)
 						{
 							//System.out.println("(" + l + "," + r + "," + (c-1) + ") East: " + l + "" + r + "" + (c));
-							if(positions[l][r+1][c] != null)
+							if(positions[l][r-1][c] != null)
+							{
 								//positions[l][r][c-1].setEastNeighbors(positions[l][r][c]);
-								positions[l][r][c].setEastNeighbors(positions[l][r+1][c]);
+								positions[l][r-1][c].setEastNeighbors(positions[l][r][c]);
+//								System.out.println(positions[l][r-1][c].toString() + " East N: " + positions[l][r][c].toString());
+							}
 						}
 						if(l != 0) // if not the bottom layer, link to below
 						{
 							//System.out.println("l: " + l + "Below: " + (l-1) + "" + r + "" + c);
-							if(positions[l][r][c] != null)
+							if(positions[l-1][r][c] != null)
+							{
 								positions[l][r][c].setBelowNeighbors(positions[l-1][r][c]);
+								positions[l-1][r][c].setAboveNeighbors(positions[l][r][c]);
+//								System.out.println(positions[l][r][c].toString() + " Below N: " + positions[l-1][r][c].toString());
+							}
 						}
 					}
 					
@@ -325,7 +335,6 @@ public class BoardController implements MouseListener
         int borderWidth = (width - gameContentPane.getWidth())/2;  // 2 since border on either side
         xMouseOffsetToContentPaneFromJFrame = borderWidth;
         yMouseOffsetToContentPaneFromJFrame = height - gameContentPane.getHeight()-borderWidth; // assume side border = bottom border; ignore title bar
-        System.out.println(xMouseOffsetToContentPaneFromJFrame + " " + yMouseOffsetToContentPaneFromJFrame);
     }
     
     private void drawBoard()
@@ -364,7 +373,7 @@ public class BoardController implements MouseListener
    
     private void afterMatch(int index)
     {
-//    	selectedPositions[index].remove();
+    	selectedPositions[index].remove();
     	gameContentPane.remove(selectedPositions[index].getJLabel());
 		
 		validTiles.remove(selectedPositions[index]);
@@ -374,22 +383,38 @@ public class BoardController implements MouseListener
 		if(selectedPositions[index].getEastNeighbors() != null)
 		{
 			validTiles.add(selectedPositions[index].getEastNeighbors());
-			gameContentPane.remove(selectedPositions[index].getEastNeighbors().getJLabel());
-			gameContentPane.add(selectedPositions[index].getEastNeighbors().drawPosition(border),-1);
+			
+			if(selectedPositions[index].getEastNeighbors().getPlayable())
+			{
+				System.out.println(selectedPositions[index].getEastNeighbors().getThisTile().getType());
+				selectedPositions[index].getEastNeighbors().getJLabel();
+//				gameContentPane.add(selectedPositions[index].getEastNeighbors().drawPosition(border),-1);
+				for(int l = currentArrangement.getHeight()-1; l > -1; l--)
+				{
+					if(positions[l][selectedPositions[index].getEastNeighbors().getX()/width][selectedPositions[index].getEastNeighbors().getY()/height] != null)
+					{
+						gameContentPane.remove(positions[l][selectedPositions[index].getEastNeighbors().getX()/width][selectedPositions[index].getEastNeighbors().getY()/height].getJLabel());
+						gameContentPane.add(positions[l][selectedPositions[index].getEastNeighbors().getX()/width][selectedPositions[index].getEastNeighbors().getY()/height].drawPosition(border),-1);
+					}
+					
+				}
+
+			}
 		}
 		if(selectedPositions[index].getWestNeighbors() != null)
 		{
 			validTiles.add(selectedPositions[index].getWestNeighbors());
-			gameContentPane.remove(selectedPositions[index].getWestNeighbors().getJLabel());
-			gameContentPane.add(selectedPositions[index].getWestNeighbors().drawPosition(border),-1);
+//			gameContentPane.remove(selectedPositions[index].getWestNeighbors().getJLabel());
+//			gameContentPane.add(selectedPositions[index].getWestNeighbors().drawPosition(border),-1);
 		}
 		if(selectedPositions[index].getPlayableBelowNeighbors() != null)
 		{
 			validTiles.add(selectedPositions[index].getPlayableBelowNeighbors());
-			gameContentPane.remove(selectedPositions[index].getBelowNeighbors().getJLabel());
-			gameContentPane.add(selectedPositions[index].getBelowNeighbors().drawPosition(border),-1);
+//			gameContentPane.remove(selectedPositions[index].getBelowNeighbors().getJLabel());
+//			gameContentPane.add(selectedPositions[index].getBelowNeighbors().drawPosition(border),-1);
 		}
     }
+
     
 	@Override
 	public void mouseClicked(MouseEvent event) {
@@ -413,14 +438,14 @@ public class BoardController implements MouseListener
 							if(selectedPositions[0] == null)
 							{
 								selectedPositions[0] = positions[l][r][c];
-//								System.out.println("Found First Tile");
+								System.out.println("Found First Tile");
 							}else if (selectedPositions[0].differentCoordinates(positions[l][r][c]))
 							{
 								selectedPositions[1] = positions[l][r][c];
 								c = positions[l][r].length-1;
 								r = positions[l].length-1;
 								l = positions.length-1;
-//								System.out.println("Found Second Tile");
+								System.out.println("Found Second Tile");
 							}
 						}
 					}
@@ -431,6 +456,7 @@ public class BoardController implements MouseListener
 		if(selectedPositions[1] != null) {
 			if(selectedPositions[0].equals(selectedPositions[1]))
 			{
+				System.out.println("Match!");
 				afterMatch(0);
 				afterMatch(1);
 		    	gameContentPane.repaint();
