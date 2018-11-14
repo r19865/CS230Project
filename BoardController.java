@@ -54,6 +54,7 @@ public class BoardController implements MouseListener
 
 	private int xMouseOffsetToContentPaneFromJFrame = 0;
     private int yMouseOffsetToContentPaneFromJFrame = 0;
+    private int printBuffer = 3;
 
 	public static void main(String[] args) 
 	{
@@ -266,7 +267,7 @@ public class BoardController implements MouseListener
         gameJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameContentPane = gameJFrame.getContentPane();
         gameContentPane.setLayout(null); // not need layout, will use absolute system
-        gameContentPane.setBackground(Color.gray);
+        gameContentPane.setBackground(Color.WHITE);
         gameContentPane.setBounds(10, 10, width-10, height-10);
         gameContentPane.addMouseListener(this);
 
@@ -281,7 +282,6 @@ public class BoardController implements MouseListener
     {
     	
     	for(int l = positions.length-1; l > -1; l--)
-    //	for(int l = 0; l < positions.length; l++)
 		{
 			// loop over the rows
 			for(int r = 0; r < positions[l].length; r++)
@@ -295,16 +295,11 @@ public class BoardController implements MouseListener
 					{
 						if(positions[l][r][c].getThisTile().getOnBoard())
 						{
+							gameContentPane.add(positions[l][r][c].drawPosition(printBuffer),-1);
 							if(positions[l][r][c].getPlayable())
 							{
-								gameContentPane.add(positions[l][r][c].drawPosition(border),-1);
+								gameContentPane.add(positions[l][r][c].drawShadow(printBuffer),-1);
 							}
-							else
-							{
-								gameContentPane.add(positions[l][r][c].drawPosition(),-1);
-							}
-
-							gameContentPane.add(positions[l][r][c].drawShadow(),-1);
 						}
 					}
 				}
@@ -316,45 +311,16 @@ public class BoardController implements MouseListener
     private void afterMatch(int index)
     {
     	selectedPositions[index].remove();
-    	gameContentPane.remove(selectedPositions[index].getJLabel());
 		
 		validTiles.remove(selectedPositions[index]);
 		
 		selectedPositions[index].notifyNeighbors(false);
-	
-		if(selectedPositions[index].getEastNeighbors() != null)
-		{
-			validTiles.add(selectedPositions[index].getEastNeighbors());
-			
-			if(selectedPositions[index].getEastNeighbors().getPlayable())
-			{
-				System.out.println(selectedPositions[index].getEastNeighbors().getThisTile().getType());
-				selectedPositions[index].getEastNeighbors().getJLabel();
-//				gameContentPane.add(selectedPositions[index].getEastNeighbors().drawPosition(border),-1);
-				for(int l = currentArrangement.getHeight()-1; l > -1; l--)
-				{
-					if(positions[l][selectedPositions[index].getEastNeighbors().getX()/width][selectedPositions[index].getEastNeighbors().getY()/height] != null)
-					{
-						gameContentPane.remove(positions[l][selectedPositions[index].getEastNeighbors().getX()/width][selectedPositions[index].getEastNeighbors().getY()/height].getJLabel());
-						gameContentPane.add(positions[l][selectedPositions[index].getEastNeighbors().getX()/width][selectedPositions[index].getEastNeighbors().getY()/height].drawPosition(border),-1);
-					}
-					
-				}
+		gameContentPane.removeAll();
+		drawBoard();
+		validTiles.add(selectedPositions[index].getEastNeighbors());
+		validTiles.add(selectedPositions[index].getWestNeighbors());
+		validTiles.add(selectedPositions[index].getPlayableBelowNeighbors());
 
-			}
-		}
-		if(selectedPositions[index].getWestNeighbors() != null)
-		{
-			validTiles.add(selectedPositions[index].getWestNeighbors());
-//			gameContentPane.remove(selectedPositions[index].getWestNeighbors().getJLabel());
-//			gameContentPane.add(selectedPositions[index].getWestNeighbors().drawPosition(border),-1);
-		}
-		if(selectedPositions[index].getPlayableBelowNeighbors() != null)
-		{
-			validTiles.add(selectedPositions[index].getPlayableBelowNeighbors());
-//			gameContentPane.remove(selectedPositions[index].getBelowNeighbors().getJLabel());
-//			gameContentPane.add(selectedPositions[index].getBelowNeighbors().drawPosition(border),-1);
-		}
     }
 
     
