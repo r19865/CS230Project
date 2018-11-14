@@ -292,10 +292,10 @@ public class BoardController implements MouseListener
 							}
 							else
 							{
-								gameContentPane.add(positions[l][r][c].drawPosition(),-1);
+								//gameContentPane.add(positions[l][r][c].drawPosition(),-1);
 							}
 
-							gameContentPane.add(positions[l][r][c].drawShadow(),-1);
+							//gameContentPane.add(positions[l][r][c].drawShadow(),-1);
 						}
 					}
 				}

@@ -1,4 +1,9 @@
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageProducer;
+import java.awt.image.RGBImageFilter;
 
 import javax.swing.ImageIcon;
 
@@ -77,4 +82,5 @@ public class tile implements Comparable<tile>
     		
         return compare;
     }
+	
 }
