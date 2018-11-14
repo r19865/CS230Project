@@ -13,6 +13,7 @@ public class boardPosition implements Comparable<boardPosition>{
 	private boardPosition eastNeighbors;
 	private boardPosition westNeighbors;
 	private boardPosition belowNeighbors;
+	private boardPosition aboveNeighbors;
 	
 	protected JFrame passedInJFrame;
 	protected JLabel positionJLabel;
@@ -38,6 +39,7 @@ public class boardPosition implements Comparable<boardPosition>{
 		eastNeighbors = null;
 		westNeighbors = null;
 		belowNeighbors = null;
+		aboveNeighbors = null;
 	}
 	
 	/////////////////////////////////////////////////////////
@@ -95,6 +97,11 @@ public class boardPosition implements Comparable<boardPosition>{
 			return belowNeighbors;
 		else 
 			return null;
+	}
+	
+	public boardPosition getAboveNeighbors()
+	{
+		return aboveNeighbors;
 	}
 	
 	public boardPosition getPlayableBelowNeighbors()
@@ -163,6 +170,11 @@ public class boardPosition implements Comparable<boardPosition>{
 		this.belowNeighbors = belowNeighbors;
 	}
 	
+	public void setAboveNeighbors(boardPosition aboveNeighbors)
+	{
+		this.aboveNeighbors = aboveNeighbors;
+	}
+	
 	/////////////////////////////////////////////////////////
 	///////////////// Public Methods /////////////////////////
 	////////////////////////////////////////////////////////
@@ -226,7 +238,8 @@ public class boardPosition implements Comparable<boardPosition>{
 		// set bounds only accepts integers - positions are doubles....
 		//System.out.println(thisTile.getType());
 		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
-		positionJLabel.setBorder(border);
+		if(playable)
+			positionJLabel.setBorder(border);
 		positionJLabel.setVisible(true);
 		
 		return positionJLabel;
@@ -239,12 +252,24 @@ public class boardPosition implements Comparable<boardPosition>{
 		if(!onBoard)
 		{
 			if(eastNeighbors != null)
-				eastNeighbors.setPlayable(true);;
+			{
+				if(eastNeighbors.getAboveNeighbors() == null)
+					eastNeighbors.setPlayable(true);
+				else if(!eastNeighbors.getAboveNeighbors().getThisTile().getOnBoard())
+					eastNeighbors.setPlayable(true);
+			}
 			if(westNeighbors != null)
-				westNeighbors.setPlayable(true);
+			{
+//				if(!westNeighbors.getAboveNeighbors().getThisTile().getOnBoard())
+					westNeighbors.setPlayable(true);
+			}
 			if(belowNeighbors != null)
+			{
 				checkBelowNeighbors();
+			}
 		}
+		
+//		System.out.println("Tile: " + thisTile.getType() + " X: " + getX() + " E: " + getEastNeighbors() + " W: " + getWestNeighbors() + " B: " + getPlayableBelowNeighbors());
 	}	
 	
 	public boolean wasSelected(int x, int y)
