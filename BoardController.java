@@ -54,11 +54,14 @@ public class BoardController implements MouseListener
 
 	private int xMouseOffsetToContentPaneFromJFrame = 0;
     private int yMouseOffsetToContentPaneFromJFrame = 0;
+    private int printBuffer = 4;
+    private int XOffset = 25;
+    private int YOffset = 25;
 
 	public static void main(String[] args) 
 	{
 		try {
-			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 1000, 1000, 20, 20);
+			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 750, 700, 20, 20);
 		}catch(IOException e)
 		{}
 	}
@@ -136,12 +139,12 @@ public class BoardController implements MouseListener
 	 */
 	private void initializePositions(JFrame gameJFrame)
 	{
-		shuffleTiles();
+//		shuffleTiles();
 		positions = new boardPosition[currentArrangement.getHeight()][currentArrangement.getRow()][currentArrangement.getColumn()];
 		int counter = 0;
 //		System.out.println(currentArrangement.getRow() + " " + currentArrangement.getColumn());
 		
-		// loop over the number of levels
+		// loop over the number of levels currentArrangement.getHeight()
 		for(int l = 0; l < currentArrangement.getHeight(); l++)
 		{
 			// loop over the rows
@@ -162,7 +165,7 @@ public class BoardController implements MouseListener
 						positions[l][r][c] = new boardPosition(allTiles[counter], gameJFrame);
 						counter++;
 						positions[l][r][c].setPlayable(currentArrangement.getPosition(r, c, l));
-						positions[l][r][c].setPosition(width*r, height*c, l);
+						positions[l][r][c].setPosition(width*r + r*printBuffer + XOffset, height*c + c*printBuffer + YOffset, l);
 //						System.out.println(positions[l][r][c].toString() + " isPlayable" + currentArrangement.getPosition(r, c, l));
 						if(positions[l][r][c].getPlayable())
 						{
@@ -173,23 +176,33 @@ public class BoardController implements MouseListener
 						
 						if(r != 0) // if not the first column, link to the position on the left
 						{
-							//System.out.println("(" + l + "," + r + "," + c + ") West: " + l + "" + r + "" + (c-1));
+//							System.out.println("(" + l + "," + r + "," + c + ") West: " + l + "" + r + "" + (c-1));
 							if(positions[l][r-1][c] != null)
+							{
 								//positions[l][r][c].setWestNeighbors(positions[l][r][c-1]);
 								positions[l][r][c].setWestNeighbors(positions[l][r-1][c]);
+//								System.out.println(positions[l][r][c].toString() + " West N: " + positions[l][r-1][c].toString());
+							}
 						}
-						if(r != currentArrangement.getRow()-1 ) // if first column, link prior position to this position (right neighbor)
+						if(r != 0) //currentArrangement.getRow()-1 ) // if first column, link prior position to this position (right neighbor)
 						{
 							//System.out.println("(" + l + "," + r + "," + (c-1) + ") East: " + l + "" + r + "" + (c));
-							if(positions[l][r+1][c] != null)
+							if(positions[l][r-1][c] != null)
+							{
 								//positions[l][r][c-1].setEastNeighbors(positions[l][r][c]);
-								positions[l][r][c].setEastNeighbors(positions[l][r+1][c]);
+								positions[l][r-1][c].setEastNeighbors(positions[l][r][c]);
+//								System.out.println(positions[l][r-1][c].toString() + " East N: " + positions[l][r][c].toString());
+							}
 						}
 						if(l != 0) // if not the bottom layer, link to below
 						{
 							//System.out.println("l: " + l + "Below: " + (l-1) + "" + r + "" + c);
-							if(positions[l][r][c] != null)
+							if(positions[l-1][r][c] != null)
+							{
 								positions[l][r][c].setBelowNeighbors(positions[l-1][r][c]);
+								positions[l-1][r][c].setAboveNeighbors(positions[l][r][c]);
+//								System.out.println(positions[l][r][c].toString() + " Below N: " + positions[l-1][r][c].toString());
+							}
 						}
 					}
 					
@@ -256,7 +269,7 @@ public class BoardController implements MouseListener
         gameJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameContentPane = gameJFrame.getContentPane();
         gameContentPane.setLayout(null); // not need layout, will use absolute system
-        gameContentPane.setBackground(Color.gray);
+        gameContentPane.setBackground(Color.LIGHT_GRAY);
         gameContentPane.setBounds(10, 10, width-10, height-10);
         gameContentPane.addMouseListener(this);
 
@@ -265,14 +278,12 @@ public class BoardController implements MouseListener
         int borderWidth = (width - gameContentPane.getWidth())/2;  // 2 since border on either side
         xMouseOffsetToContentPaneFromJFrame = borderWidth;
         yMouseOffsetToContentPaneFromJFrame = height - gameContentPane.getHeight()-borderWidth; // assume side border = bottom border; ignore title bar
-        System.out.println(xMouseOffsetToContentPaneFromJFrame + " " + yMouseOffsetToContentPaneFromJFrame);
     }
     
     private void drawBoard()
     {
     	
     	for(int l = positions.length-1; l > -1; l--)
-    //	for(int l = 0; l < positions.length; l++)
 		{
 			// loop over the rows
 			for(int r = 0; r < positions[l].length; r++)
@@ -286,16 +297,11 @@ public class BoardController implements MouseListener
 					{
 						if(positions[l][r][c].getThisTile().getOnBoard())
 						{
+							gameContentPane.add(positions[l][r][c].drawPositionWithBorder(),-1);
 							if(positions[l][r][c].getPlayable())
 							{
-								gameContentPane.add(positions[l][r][c].drawPosition(border),-1);
+								gameContentPane.add(positions[l][r][c].drawShadow(currentArrangement.getRow(), currentArrangement.getColumn()),-1);
 							}
-							else
-							{
-								//gameContentPane.add(positions[l][r][c].drawPosition(),-1);
-							}
-
-							//gameContentPane.add(positions[l][r][c].drawShadow(),-1);
 						}
 					}
 				}
@@ -306,32 +312,19 @@ public class BoardController implements MouseListener
    
     private void afterMatch(int index)
     {
-//    	selectedPositions[index].remove();
-    	gameContentPane.remove(selectedPositions[index].getJLabel());
+    	selectedPositions[index].remove();
 		
 		validTiles.remove(selectedPositions[index]);
 		
 		selectedPositions[index].notifyNeighbors(false);
-	
-		if(selectedPositions[index].getEastNeighbors() != null)
-		{
-			validTiles.add(selectedPositions[index].getEastNeighbors());
-			gameContentPane.remove(selectedPositions[index].getEastNeighbors().getJLabel());
-			gameContentPane.add(selectedPositions[index].getEastNeighbors().drawPosition(border),-1);
-		}
-		if(selectedPositions[index].getWestNeighbors() != null)
-		{
-			validTiles.add(selectedPositions[index].getWestNeighbors());
-			gameContentPane.remove(selectedPositions[index].getWestNeighbors().getJLabel());
-			gameContentPane.add(selectedPositions[index].getWestNeighbors().drawPosition(border),-1);
-		}
-		if(selectedPositions[index].getPlayableBelowNeighbors() != null)
-		{
-			validTiles.add(selectedPositions[index].getPlayableBelowNeighbors());
-			gameContentPane.remove(selectedPositions[index].getBelowNeighbors().getJLabel());
-			gameContentPane.add(selectedPositions[index].getBelowNeighbors().drawPosition(border),-1);
-		}
+		gameContentPane.removeAll();
+		drawBoard();
+		validTiles.add(selectedPositions[index].getEastNeighbors());
+		validTiles.add(selectedPositions[index].getWestNeighbors());
+		validTiles.add(selectedPositions[index].getPlayableBelowNeighbors());
+
     }
+
     
 	@Override
 	public void mouseClicked(MouseEvent event) {
@@ -355,14 +348,14 @@ public class BoardController implements MouseListener
 							if(selectedPositions[0] == null)
 							{
 								selectedPositions[0] = positions[l][r][c];
-//								System.out.println("Found First Tile");
+								System.out.println("Found First Tile");
 							}else if (selectedPositions[0].differentCoordinates(positions[l][r][c]))
 							{
 								selectedPositions[1] = positions[l][r][c];
 								c = positions[l][r].length-1;
 								r = positions[l].length-1;
 								l = positions.length-1;
-//								System.out.println("Found Second Tile");
+								System.out.println("Found Second Tile");
 							}
 						}
 					}
@@ -373,6 +366,7 @@ public class BoardController implements MouseListener
 		if(selectedPositions[1] != null) {
 			if(selectedPositions[0].equals(selectedPositions[1]))
 			{
+				System.out.println("Match!");
 				afterMatch(0);
 				afterMatch(1);
 		    	gameContentPane.repaint();
