@@ -69,10 +69,11 @@ public class BoardController implements MouseListener
 	public BoardController(String filename, String windowTitle, int windowWidth, int windowHeight, int xlocation, int ylocation) throws IOException
 	{
 		currentArrangement = new boardArrangements(new File(filename));
-		
-		tilesImage = ImageIO.read(new FileInputStream(new File("tiles.jpg")));
-		this.width = tilesImage.getWidth() / 12;
-    	this.height = tilesImage.getHeight() /12;
+		width=120;
+		height=180;
+		//tilesImage = ImageIO.read(new FileInputStream(new File("tiles.jpg")));
+		//this.width = tilesImage.getWidth() / 12;
+   // 	this.height = tilesImage.getHeight() /12;
     	
     	//System.out.print("Width: " + width + "Height: " + height); // 62 x 82
 		initializeGUI(windowTitle, windowWidth, windowHeight, xlocation, ylocation);
@@ -88,45 +89,59 @@ public class BoardController implements MouseListener
 
 	/**
 	 * Initializes all the tiles -  adds the type and photos to the tile class
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 */
-	private void initializeTiles()
+	private void initializeTiles() throws FileNotFoundException, IOException
 	{
-		for(int n = 0; n<9; n++)
+		for (int a=0; a<4; a++) //total of 108 number tiles
 		{
-			for(int m = 0; m<4; m++)
+			for (int i=0; i<9; i++)
 			{
-				allTiles[12*n+3*m] = new tile(null, "Dot "+(n+1), true);
-				allTiles[12*n+3*m].setImage(getIcon(width*n, 0, width, height));
-				allTiles[12*n+3*m+1] = new tile(null, "Bamboo "+(n+1), true);
-				allTiles[12*n+3*m+1].setImage(getIcon(width*n, 4*height, width, height));
-				allTiles[12*n+3*m+2] = new tile(null, "Character"+(n+1), true);
-				allTiles[12*n+3*m+2].setImage(getIcon(width*n, 8*height, width, height));
+				allTiles[(a*27)+3*i] = new tile(null, "Dot "+(i+1), true);
+				allTiles[(a*27)+i*3].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("circle"+(i+1)+".png")))));
+				allTiles[(a*27)+i*3+1] = new tile(null, "Bamboo "+(i+1), true);
+				allTiles[(a*27)+i*3+1].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("bamboo"+(i+1)+".png")))));
+				allTiles[(a*27)+i*3+2] = new tile(null, "Character"+(i+1), true);
+				allTiles[(a*27)+i*3+2].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("char"+(i+1)+".png")))));
 			}
 		}
-		for(int m = 0; m<4; m++)
-		{	
-			allTiles[9*m+108] = new tile(null, "Season", true);
-			allTiles[9*m+108].setImage(new ImageIcon(tilesImage.getSubimage(11*width, 8*height +m*height, width, height)));
-			allTiles[9*m+109] = new tile(null, "Flower", true);
-			allTiles[9*m+109].setImage(new ImageIcon(tilesImage.getSubimage(11*width, 4*height + m*height, width, height)));
-			
-			allTiles[9*m+110] = new tile(null, "North", true);
-			allTiles[9*m+110].setImage(getIcon(10*width, 8*height + m*height, width, height));
-			allTiles[9*m+111] = new tile(null, "South", true);
-			allTiles[9*m+111].setImage(getIcon(10*width, 4*height + m*height, width, height));
-			allTiles[9*m+112] = new tile(null, "East", true);
-			allTiles[9*m+112].setImage(getIcon(9*width, 4*height + m*height, width, height));
-			allTiles[9*m+113] = new tile(null, "West", true);
-			allTiles[9*m+113].setImage(getIcon(9*width, 8*height + m*height, width, height));
-			
-			allTiles[9*m+114] = new tile(null, "Red", true);
-			allTiles[9*m+114].setImage(getIcon(9*width, m*height, width, height));
-			allTiles[9*m+115] = new tile(null, "Green", true);
-			allTiles[9*m+115].setImage(getIcon(10*width, m*height, width, height));
-			allTiles[9*m+116] = new tile(null, "White", true);
-			allTiles[9*m+116].setImage(getIcon(11*width, m*height, width, height));
-			
+		
+		for (int a=0; a<4; a++)
+		{
+			allTiles[108+7*a]= new tile(null, "Red", true);
+			allTiles[108+7*a].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("red.png")))));
+			allTiles[108+7*a+1]= new tile(null, "Green", true);
+			allTiles[108+7*a+1].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("green.png")))));
+			allTiles[108+7*a+2]= new tile(null, "Black", true);
+			allTiles[108+7*a+2].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("black.png")))));
+			allTiles[108+7*a+3]= new tile(null, "North", true);
+			allTiles[108+7*a+3].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("north.png")))));
+			allTiles[108+7*a+4]= new tile(null, "South", true);
+			allTiles[108+7*a+4].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("south.png")))));
+			allTiles[108+7*a+5]= new tile(null, "East", true);
+			allTiles[108+7*a+5].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("east.png")))));
+			allTiles[108+7*a+6]= new tile(null, "West", true);
+			allTiles[108+7*a+6].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("west.png")))));	
 		}
+		allTiles[136]= new tile(null, "Season", true);
+		allTiles[136].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("fall.png")))));	
+		allTiles[137]= new tile(null, "Season", true);
+		allTiles[137].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("summer.png")))));	
+		allTiles[138]= new tile(null, "Season", true);
+		allTiles[138].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("spring.png")))));	
+		allTiles[139]= new tile(null, "Season", true);
+		allTiles[139].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("winter.png")))));	
+		allTiles[140]= new tile(null, "Plant", true);
+		allTiles[140].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("bamboo.png")))));	
+		allTiles[141]= new tile(null, "Plant", true);
+		allTiles[141].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("lilly.png")))));	
+		allTiles[142]= new tile(null, "Plant", true);
+		allTiles[142].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("plum.png")))));	
+		allTiles[143]= new tile(null, "Plant", true);
+		allTiles[143].setImage(new ImageIcon(ImageIO.read(new FileInputStream(new File("rose.png")))));	
+		System.out.print("Complete");
+		
 	}
 	
 	private ImageIcon getIcon(int sw, int sh, int w , int h)
