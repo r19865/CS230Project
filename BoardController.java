@@ -139,10 +139,9 @@ public class BoardController implements MouseListener
 	 */
 	private void initializePositions(JFrame gameJFrame)
 	{
-//		shuffleTiles();
+		shuffleTiles();
 		positions = new boardPosition[currentArrangement.getHeight()][currentArrangement.getRow()][currentArrangement.getColumn()];
 		int counter = 0;
-//		System.out.println(currentArrangement.getRow() + " " + currentArrangement.getColumn());
 		
 		// loop over the number of levels currentArrangement.getHeight()
 		for(int l = 0; l < currentArrangement.getHeight(); l++)
@@ -166,32 +165,24 @@ public class BoardController implements MouseListener
 						counter++;
 						positions[l][r][c].setPlayable(currentArrangement.getPosition(r, c, l));
 						positions[l][r][c].setPosition(width*r + r*printBuffer + XOffset, height*c + c*printBuffer + YOffset, l);
-//						System.out.println(positions[l][r][c].toString() + " isPlayable" + currentArrangement.getPosition(r, c, l));
+
 						if(positions[l][r][c].getPlayable())
 						{
 							validTiles.add(positions[l][r][c]);
 						}
-						
-						//System.out.println(positions.length);
-						
+												
 						if(r != 0) // if not the first column, link to the position on the left
 						{
-//							System.out.println("(" + l + "," + r + "," + c + ") West: " + l + "" + r + "" + (c-1));
 							if(positions[l][r-1][c] != null)
 							{
-								//positions[l][r][c].setWestNeighbors(positions[l][r][c-1]);
 								positions[l][r][c].setWestNeighbors(positions[l][r-1][c]);
-//								System.out.println(positions[l][r][c].toString() + " West N: " + positions[l][r-1][c].toString());
 							}
 						}
 						if(r != 0) //currentArrangement.getRow()-1 ) // if first column, link prior position to this position (right neighbor)
 						{
-							//System.out.println("(" + l + "," + r + "," + (c-1) + ") East: " + l + "" + r + "" + (c));
 							if(positions[l][r-1][c] != null)
 							{
-								//positions[l][r][c-1].setEastNeighbors(positions[l][r][c]);
 								positions[l][r-1][c].setEastNeighbors(positions[l][r][c]);
-//								System.out.println(positions[l][r-1][c].toString() + " East N: " + positions[l][r][c].toString());
 							}
 						}
 						if(l != 0) // if not the bottom layer, link to below
@@ -201,9 +192,10 @@ public class BoardController implements MouseListener
 							{
 								positions[l][r][c].setBelowNeighbors(positions[l-1][r][c]);
 								positions[l-1][r][c].setAboveNeighbors(positions[l][r][c]);
-//								System.out.println(positions[l][r][c].toString() + " Below N: " + positions[l-1][r][c].toString());
 							}
 						}
+						
+						System.out.println(positions[l][r][c]);
 					}
 					
 				}
@@ -211,6 +203,7 @@ public class BoardController implements MouseListener
 			}
 			
 		}
+
 		
 	}
 	
@@ -343,19 +336,22 @@ public class BoardController implements MouseListener
 					{
 						if(positions[l][r][c].wasSelected(event.getX()-xMouseOffsetToContentPaneFromJFrame, event.getY() - yMouseOffsetToContentPaneFromJFrame))
 						{
-//							System.out.println(event.getX() + " " + event.getY());
-//							System.out.println("Selected: " + positions[l][r][c].toString());
 							if(selectedPositions[0] == null)
 							{
 								selectedPositions[0] = positions[l][r][c];
-								System.out.println("Found First Tile");
+								System.out.println("First " + positions[l][r][c].getThisTile().getType());
 							}else if (selectedPositions[0].differentCoordinates(positions[l][r][c]))
 							{
+								System.out.println("Second " + positions[l][r][c].getThisTile().getType());
 								selectedPositions[1] = positions[l][r][c];
 								c = positions[l][r].length-1;
 								r = positions[l].length-1;
 								l = positions.length-1;
-								System.out.println("Found Second Tile");
+							}
+							else if(positions[l][r][c].equals(selectedPositions[0]))
+							{
+								selectedPositions[0].deselect();
+								selectedPositions[0] = null;
 							}
 						}
 					}
@@ -372,10 +368,17 @@ public class BoardController implements MouseListener
 		    	gameContentPane.repaint();
 
 			}
+			else
+			{
+				selectedPositions[0].deselect();
+				selectedPositions[1].deselect();
+			}
 			// check if valid
 			selectedPositions[0] = null;
 			selectedPositions[1] = null;
 		} 
+		
+		System.out.println(selectedPositions[1] + " " + selectedPositions[0]);
 		
 	}
 

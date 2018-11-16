@@ -1,3 +1,4 @@
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -48,6 +49,12 @@ public class tile implements Comparable<tile>
 	public void setImage(ImageIcon newImage)
 	{
 		image= newImage;
+	}
+	
+	public void setImage(BufferedImage newImage, int newW, int newH)
+	{
+		Image tmp = newImage.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+		image = new ImageIcon(tmp);
 	}
 	
 	public void setType(String newType)
