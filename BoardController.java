@@ -14,13 +14,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EventObject;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
@@ -42,6 +46,7 @@ public class BoardController implements MouseListener
 	private List<boardPosition> validTiles = new ArrayList<>();
 	
     private JFrame gameJFrame;
+    private JLabel timerLabel;
     private Container gameContentPane;
     private BufferedImage tilesImage;
     private int width;
@@ -57,22 +62,32 @@ public class BoardController implements MouseListener
     private int printBuffer = 4;
     private int XOffset = 25;
     private int YOffset = 25;
-
+    static long startTime=0;
+    private java.util.Timer gameTimer = new java.util.Timer();
+    private long timerOff=0;
+    private Date oldTime=null;
+    private Date newTime=null;
+    public static final int shufflingTileTime = 700; 
+    
 	public static void main(String[] args) 
 	{
 		try {
 			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 750, 700, 20, 20);
+			//startTime = System.currentTimeMillis();
 		}catch(IOException e)
 		{
 			e.printStackTrace();
 		}
 	}
 	
+	
+	
 	public BoardController(String filename, String windowTitle, int windowWidth, int windowHeight, int xlocation, int ylocation) throws IOException
 	{
 		currentArrangement = new boardArrangements(new File(filename));
 		width=62;
 		height=82;
+		//timer = new Timer();
 		//tilesImage = ImageIO.read(new FileInputStream(new File("tiles.jpg")));
 		//this.width = tilesImage.getWidth() / 12;
    // 	this.height = tilesImage.getHeight() /12;
@@ -82,10 +97,24 @@ public class BoardController implements MouseListener
 		initializeTiles();
 		initializePositions(gameJFrame);
 		drawBoard();
-        gameJFrame.setVisible(true);
-
-
-		findValidPairs();
+		gameJFrame.setVisible(true);
+        findValidPairs();
+        oldTime= new Date();
+        
+        TimerTask repeatedTask = new TimerTask() {
+            public void run() 
+            {
+            		Date trash=new Date();
+            		newTime=trash;
+            		timerOff=Math.abs(newTime.getTime()-oldTime.getTime());
+                System.out.println("Task performed on " + timerOff+ new Date()+ newTime.getSeconds());
+            }
+        };
+        Timer timer = new Timer("Timer");
+         
+        long delay  = 1000L;
+        long period = 1000L;
+        timer.scheduleAtFixedRate(repeatedTask, delay, period);
 		
 	}
 
@@ -278,6 +307,12 @@ public class BoardController implements MouseListener
         gameContentPane.setBackground(Color.LIGHT_GRAY);
         gameContentPane.setBounds(10, 10, width-10, height-10);
         gameContentPane.addMouseListener(this);
+        timerLabel= new JLabel("0");
+        timerLabel.setBounds(0,0,50,20);
+        timerLabel.setVisible(true);
+        gameContentPane.add(timerLabel);
+        
+       // gameTimer.schedule(this, 0, shufflingTileTime); 
 
         // Event mouse position is given relative to JFrame, where dolphin's image in JLabel is given relative to ContentPane,
         //  so adjust for the border
@@ -313,6 +348,7 @@ public class BoardController implements MouseListener
 				}
 			}
 		}
+    	timerLabel.setText(Long.toString(timerOff));
 	}
     
    
