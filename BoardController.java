@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -9,8 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
 import java.util.Random;
+import java.util.Stack;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -32,25 +36,27 @@ public class BoardController implements MouseListener
 	private boardArrangements currentArrangement;
 	private static Random random;
 	private List<boardPosition> validTiles = new ArrayList<>();
+	private Stack<boardPosition> matchedTiles = new Stack<>();
 	
     private JFrame gameJFrame;
     private Container gameContentPane;
     private JLabel validPairsLabel;
+    private JButton undoButton;
     private int width;
     private int height;
 
 	private int xMouseOffsetToContentPaneFromJFrame = 0;
     private int yMouseOffsetToContentPaneFromJFrame = 0;
     private int printBuffer = 4;
-    private int XOffset = 35;
-    private int YOffset = 35;
+    private int XOffset = 100;
+    private int YOffset = 100;
     
     private int numberOfCompletedMatches = 0;
 
 	public static void main(String[] args) 
 	{
 		try {
-			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 800, 750, 20, 20);
+			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 900, 800, 20, 20);
 		}catch(IOException e)
 		{
 			e.printStackTrace();
@@ -196,7 +202,7 @@ public class BoardController implements MouseListener
 							if(positions[l][r][c-1] != null)
 							{
 								positions[l][r][c-1].setSouthNeighbors(positions[l][r][c]);
-								System.out.println(positions[l][r][c]+ " " +(positions[l][r][c-1]));
+//								System.out.println(positions[l][r][c]+ " " +(positions[l][r][c-1]));
 							}
 						}
 						
@@ -273,10 +279,38 @@ public class BoardController implements MouseListener
         gameContentPane.addMouseListener(this);
         
         validPairsLabel = new JLabel();
-        validPairsLabel.setLocation(5, 5);
-        validPairsLabel.setSize(300, 25);
-        validPairsLabel.setFont(new Font(validPairsLabel.getName(), Font.PLAIN, 18));
+        validPairsLabel.setLocation(8, 5);
+        validPairsLabel.setSize(300, 40);
+        validPairsLabel.setFont(new Font(validPairsLabel.getName(), Font.PLAIN, 24));
         gameContentPane.add(validPairsLabel);
+        
+        undoButton = new JButton();
+        undoButton.setText("Undo");
+        undoButton.setSize(150, 40);
+        undoButton.setFont(validPairsLabel.getFont());
+        undoButton.setLocation(gameJFrame.getWidth() - undoButton.getWidth() - 25, 5);
+        gameContentPane.add(undoButton);
+        
+        undoButton.addActionListener(new ActionListener() {
+        	@Override
+            public void actionPerformed(ActionEvent e) {
+        		
+        		if(matchedTiles.size() > 0)
+    			{
+	        		boardPosition temp = matchedTiles.pop();
+	        		temp.getThisTile().setOnBoard(true);
+	        		validTiles.remove(temp.putBackOnBoard());
+	        		// check playable and if playable add to valid tiles
+	        		
+	        		temp = matchedTiles.pop();
+	        		temp.getThisTile().setOnBoard(true);
+	        		validTiles.remove(temp.putBackOnBoard());
+	        		
+	        		updateBoard();
+    			}
+            }
+
+        });
 
         // Event mouse position is given relative to JFrame, where dolphin's image in JLabel is given relative to ContentPane,
         //  so adjust for the border
@@ -315,6 +349,7 @@ public class BoardController implements MouseListener
 			}
 		}
     	
+    	gameContentPane.add(undoButton);
     	gameContentPane.add(validPairsLabel);
     	int valid = findValidPairs();
     	validPairsLabel.setText("Valid Pairs On Board: " + valid);
@@ -339,6 +374,7 @@ public class BoardController implements MouseListener
     	selectedPositions[index].remove();
 		
 		validTiles.remove(selectedPositions[index]);
+		matchedTiles.push(selectedPositions[index]);
 		
 		selectedPositions[index].notifyNeighbors(false);
 		if(!validTiles.contains(selectedPositions[index].getPlayableEastNeighbors()))

@@ -1,5 +1,8 @@
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -9,6 +12,8 @@ import javax.swing.border.Border;
 
 public class boardPosition implements Comparable<boardPosition>{
 
+	private final Color colors[] = {Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA};
+	
 	private int[] position = new int[3];
 	private boolean playable;
 	
@@ -284,8 +289,7 @@ public class boardPosition implements Comparable<boardPosition>{
 		
 		if(getZ() != 0)
 		{
-			Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.MAGENTA};
-			Border raisedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()], colors[getZ()]);
+			Border raisedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()-1], colors[getZ()-1]);
 			positionJLabel.setBorder(raisedBorder);
 		}
 		positionJLabel.setVisible(true);
@@ -368,6 +372,7 @@ public class boardPosition implements Comparable<boardPosition>{
 		if(selected)
 		{
 			shadow.setBackground(Color.YELLOW);
+			positionJLabel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.YELLOW, Color.YELLOW));
 			positionJLabel.setVisible(false);
 			shadow.setVisible(false);
 			positionJLabel.repaint();
@@ -382,6 +387,7 @@ public class boardPosition implements Comparable<boardPosition>{
 	public void deselect()
 	{
 		shadow.setBackground(Color.DARK_GRAY);
+		positionJLabel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()-1], colors[getZ()-1]));
 		positionJLabel.setVisible(false);
 		shadow.setVisible(false);
 		positionJLabel.repaint();
@@ -398,6 +404,34 @@ public class boardPosition implements Comparable<boardPosition>{
 		thisTile.setOnBoard(false);
 	}
 	
+	public List<boardPosition> putBackOnBoard()
+	{
+		List<boardPosition> temp = new ArrayList<>();
+		
+		if(getEastNeighbors() != null)
+		{
+			if(getEastNeighbors().getEastNeighbors() != null && getEastNeighbors().getPlayable())
+			{
+				getEastNeighbors().setPlayable(false);
+				temp.add(getEastNeighbors());
+				System.out.println("East Neighbor no longer playable");
+			}
+		}
+		if(getWestNeighbors() != null)
+		{
+			if(getWestNeighbors().getWestNeighbors() != null && getWestNeighbors().getPlayable())
+			{
+				getWestNeighbors().setPlayable(false);
+				temp.add(getWestNeighbors());
+				System.out.println("West Neighbor no longer playable");
+			}
+		}
+	
+		setPlayable(true);
+		
+		return temp;
+	}
+		
 	public String toString()
 	{
 		return String.format("Type: %s X: %d Y: %d Z: %d", thisTile.getType(), position[0]/62, position[1]/82, position[2]);
