@@ -1,10 +1,6 @@
 
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -21,6 +17,7 @@ public class boardPosition implements Comparable<boardPosition>{
 	private boardPosition westNeighbors;
 	private boardPosition belowNeighbors;
 	private boardPosition aboveNeighbors;
+	private boardPosition southNeighbors;
 	
 	protected JFrame passedInJFrame;
 	protected JLabel positionJLabel;
@@ -39,7 +36,7 @@ public class boardPosition implements Comparable<boardPosition>{
         positionJLabel.setVisible(false);
 		positionJLabel.setIcon(thisTile.getImage());
 		shadow = new JLabel();
-		shadow.setBounds (10, 10, 10, 10); // arbitrary, will change later
+		//shadow.setBounds (10, 10, 10, 10); // arbitrary, will change later
         shadow.setVisible(false);
         passedInJFrame.getContentPane().add(positionJLabel);
         passedInJFrame.getContentPane().add(shadow);
@@ -113,12 +110,33 @@ public class boardPosition implements Comparable<boardPosition>{
 		return aboveNeighbors;
 	}
 	
+	public boardPosition getPlayableWestNeighbors()
+	{
+		if(westNeighbors != null && westNeighbors.getPlayable() && westNeighbors.getThisTile().getOnBoard())
+			return westNeighbors;
+		else 
+			return null;
+	}
+	
+	public boardPosition getPlayableEastNeighbors()
+	{
+		if(eastNeighbors != null && eastNeighbors.getPlayable() && eastNeighbors.getThisTile().getOnBoard())
+			return eastNeighbors;
+		else 
+			return null;
+	}
+	
 	public boardPosition getPlayableBelowNeighbors()
 	{
-		if(belowNeighbors != null && belowNeighbors.getPlayable())
+		if(belowNeighbors != null && belowNeighbors.getPlayable() && belowNeighbors.getThisTile().getOnBoard())
 			return belowNeighbors;
 		else 
 			return null;
+	}
+	
+	private boardPosition getSouthNeighbors()
+	{
+		return southNeighbors;
 	}
 	
 	public JLabel getJLabel()
@@ -189,6 +207,11 @@ public class boardPosition implements Comparable<boardPosition>{
 		this.aboveNeighbors = aboveNeighbors;
 	}
 	
+	public void setSouthNeighbors(boardPosition southNeighbors)
+	{
+		this.southNeighbors = southNeighbors;
+	}
+	
 	/////////////////////////////////////////////////////////
 	///////////////// Public Methods /////////////////////////
 	////////////////////////////////////////////////////////
@@ -218,11 +241,14 @@ public class boardPosition implements Comparable<boardPosition>{
 		return newTile;
 	}
 	
+	@Override
 	public int compareTo(boardPosition bp) 
     {
-    	int compare= getThisTile().getType().compareTo(bp.getThisTile().getType());
+    	if(this == null || bp == null)
+    		return -1;
+    	else
+    		return getThisTile().getType().compareTo(bp.getThisTile().getType());
     		
-        return compare;
     }
 	
 	public boolean equals(boardPosition position)
@@ -255,30 +281,52 @@ public class boardPosition implements Comparable<boardPosition>{
 	public JLabel drawPositionWithBorder()
 	{
 		positionJLabel.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
-		Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.MAGENTA};
 		
-		Border raisedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()], colors[getZ()]);
-		positionJLabel.setBorder(raisedBorder);
+		if(getZ() != 0)
+		{
+			Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.MAGENTA};
+			Border raisedBorder = BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()], colors[getZ()]);
+			positionJLabel.setBorder(raisedBorder);
+		}
 		positionJLabel.setVisible(true);
 
 		
 		return positionJLabel;
 	}
 	
-	public JLabel drawShadow(int arrangementWidth, int arrangementHeightm)
-	{
-		if(playable)
-			shadow.setBounds(position[0]+shadowOffset, position[1]+shadowOffset, thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
-
+	public JLabel drawShadow()
+	{		
+		if(getZ() != 0)
+		{
+			if(getEastNeighbors() == null)
+				if(getSouthNeighbors() != null)
+					shadow.setBounds(position[0], position[1], thisTile.getImage().getIconWidth() + getZ() + shadowOffset, thisTile.getImage().getIconHeight());
+				else
+					shadow.setBounds(position[0], position[1], thisTile.getImage().getIconWidth() + getZ() + shadowOffset, thisTile.getImage().getIconHeight()+getZ()+shadowOffset);
+			else if(getWestNeighbors() == null)
+				if(getSouthNeighbors() != null)
+					shadow.setBounds(position[0], position[1], thisTile.getImage().getIconWidth() -getZ()-shadowOffset, thisTile.getImage().getIconHeight());	
+				else
+					shadow.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight()+getZ()+shadowOffset);
+			else if (getSouthNeighbors() == null)
+				shadow.setBounds(position[0], position[1], thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight()+getZ()+shadowOffset);
+			
+			
+			shadow.setOpaque(true);
+			shadow.setBackground(Color.DARK_GRAY);
+			shadow.setVisible(true);
+		}
+		else
+		{
+			shadow.setBounds(position[0], position[1], 1, 1);
+		}
 			
 //		if(playable && position[0]/thisTile.getImage().getIconWidth() > arrangementWidth/2)
 //			shadow.setBounds(position[0], position[1] , thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
 //		else if(playable && position[0]/thisTile.getImage().getIconWidth() < arrangementWidth/2)
 //		shadow.setBounds(position[0], position[1] , thisTile.getImage().getIconWidth(), thisTile.getImage().getIconHeight());
 		
-		shadow.setOpaque(true);
-		shadow.setBackground(Color.DARK_GRAY);
-		shadow.setVisible(true);
+
 			
 		return shadow;
 	}
