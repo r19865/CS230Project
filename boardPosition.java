@@ -15,6 +15,7 @@ public class boardPosition implements Comparable<boardPosition>{
 	private final Color colors[] = {Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA};
 	
 	private int[] position = new int[3];
+	private int[] arrayPosition = new int[2];
 	private boolean playable;
 	
 	private tile thisTile;
@@ -72,6 +73,16 @@ public class boardPosition implements Comparable<boardPosition>{
 		return position[2];
 	}
 	
+	public int getArrayX()
+	{
+		return arrayPosition[0];
+	}
+	
+	public int getArrayY()
+	{
+		return arrayPosition[1];
+	}
+		
 	public int[] getPosition() {
 		return position;
 	}
@@ -165,6 +176,12 @@ public class boardPosition implements Comparable<boardPosition>{
 		this.position[2] = z;
 	}
 	
+	public void setArrayPosition(int x, int y)
+	{
+		this.arrayPosition[0] = x;
+		this.arrayPosition[1] = y;
+	}
+	
 	public void setPosition(int[] position)
 	{
 		if(position.length == 3) {
@@ -217,6 +234,11 @@ public class boardPosition implements Comparable<boardPosition>{
 		this.southNeighbors = southNeighbors;
 	}
 	
+	public void setJLabelIcon()
+	{
+		positionJLabel.setIcon(thisTile.getImage());
+	}
+	
 	/////////////////////////////////////////////////////////
 	///////////////// Public Methods /////////////////////////
 	////////////////////////////////////////////////////////
@@ -237,6 +259,10 @@ public class boardPosition implements Comparable<boardPosition>{
 			
 			newTile.setThisTile(this.thisTile);
 			this.thisTile = tempTile;
+			
+			newTile.setJLabelIcon();
+			this.setJLabelIcon();
+			
 			tempTile = null;
 		}else
 		{
@@ -268,7 +294,7 @@ public class boardPosition implements Comparable<boardPosition>{
 	
 	public boolean sameCoordinates(boardPosition position)
 	{
-		return (this.getX() == position.getX() || this.getY() == position.getY() || this.getZ() == position.getZ());
+		return (this.getX() == position.getX() && this.getY() == position.getY() && this.getZ() == position.getZ());
 	}
 	
 	public JLabel drawPosition(int buffer)
@@ -387,7 +413,10 @@ public class boardPosition implements Comparable<boardPosition>{
 	public void deselect()
 	{
 		shadow.setBackground(Color.DARK_GRAY);
-		positionJLabel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()-1], colors[getZ()-1]));
+		if(getZ() >0)
+			positionJLabel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, colors[getZ()-1], colors[getZ()-1]));
+		else
+			positionJLabel.setBorder(null);
 		positionJLabel.setVisible(false);
 		shadow.setVisible(false);
 		positionJLabel.repaint();

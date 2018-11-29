@@ -6,6 +6,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,27 +28,34 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.JOptionPane;
 
-public class BoardController extends TimerTask implements MouseListener
+public class BoardController extends TimerTask implements MouseListener, ActionListener
 {
 	
 	private final int TOTAL_TILES= 144;
 	private final String[] options = {"Yes, please", "No, thank you"};
 	private final int NUMBEROFMATCHES = 72;
-	;//private final int NUMBER_OF_ARRANGEMENTS = 1;
+	private final int TIMERSCHEDULE = 500;
+	private final int DEFAULTSHUFFLETIME = 12500; 
 	
 	private tile allTiles[]= new tile[TOTAL_TILES];
 	private boardPosition[][][] positions;
 	private boardPosition[] selectedPositions = new boardPosition[2];
 	
-	//private String[] arrangmentFiles = new String[NUMBER_OF_ARRANGEMENTS];
-	//private int indexOfCurrentArrangement = 0;
 	private boardArrangements currentArrangement;
 	private static Random random;
 	private List<boardPosition> validTiles = new ArrayList<>();
+	private int[] validTilesCounter;
+	private Random generator = new Random();
 	private Stack<boardPosition> matchedTiles = new Stack<>();
 	
     private JFrame gameJFrame;
@@ -55,26 +63,21 @@ public class BoardController extends TimerTask implements MouseListener
     private Container gameContentPane;
     private JLabel validPairsLabel;
     private JButton undoButton;
+    private JMenuItem difficultyMenuItem;
     private int width;
     private int height;
 
 	private int xMouseOffsetToContentPaneFromJFrame = 0;
     private int yMouseOffsetToContentPaneFromJFrame = 0;
     private int printBuffer = 4;
-
-   // private int XOffset = 25;
-    //private int YOffset = 25;
-    static int startTime=0;
-    private java.util.Timer gameTimer = new java.util.Timer();
-    private int timerOff=0;
-    private Date oldTime=null;
-    private Date newTime=null;
-    public static final int shufflingTileTime = 1000; 
-    private boolean gameIsReady = false;
-
     private int XOffset = 100;
     private int YOffset = 100;
-    
+
+    private java.util.Timer gameTimer = new java.util.Timer();
+    private int timeCounter=0;
+    private boolean gameIsReady = false;
+    public int shuffleTime = DEFAULTSHUFFLETIME;
+
     private int numberOfCompletedMatches = 0;
 
 	public static void main(String[] args) 
@@ -92,6 +95,7 @@ public class BoardController extends TimerTask implements MouseListener
 	public BoardController(String filename, String windowTitle, int windowWidth, int windowHeight, int xlocation, int ylocation) throws IOException
 	{
 		currentArrangement = new boardArrangements(new File(filename));
+		validTilesCounter = new int[currentArrangement.getHeight()];
 		width=62;
 		height=82;
 
@@ -106,25 +110,52 @@ public class BoardController extends TimerTask implements MouseListener
 		initializeTiles();
 		initializePositions();
 		drawBoard();
+		
+		DifficultyDialog();
+		
 		gameIsReady=true;
 		gameJFrame.setVisible(true);
         findValidPairs();
-        gameTimer.schedule(this, 0, shufflingTileTime);
+        gameTimer.schedule(this, 0, TIMERSCHEDULE);
         gameJFrame.setVisible(true);
 		
 		
 	}
 
-	 public void run() 
-	    { 
-	    		timerOff++;
-	    		if (gameIsReady)
-	    		{
-		        	timerLabel.setText(Integer.toString(timerOff));
-		        	timerLabel.repaint();
-	    		}
-	       
-	    }
+	public void run() 
+	{ 
+		timeCounter++;
+		if (gameIsReady)
+		{
+	    	if(timeCounter%2 == 0)
+	    	{
+				timerLabel.setText("Time: " + Integer.toString(timeCounter/2) + " sec");
+		    	timerLabel.repaint();
+	    	}
+	    	
+	    	if(TIMERSCHEDULE*timeCounter % shuffleTime == 0)
+	    	{
+		    	boardPosition first = validTiles.get(getRandomInt(validTiles.size()));
+	
+		    	if(first.getZ() > 1)
+		    	{
+		    		first.switchNeighbors(positions[getRandomInt(first.getZ())][first.getArrayX()][first.getArrayY()]);
+		    	}else if(first.getZ() > 0)
+		    	{
+		    		first.switchNeighbors(positions[0][first.getArrayX()][first.getArrayY()]);
+		    	}
+		    	
+		    	first.getJLabel().repaint();
+	    	}
+		}
+		       
+	}
+	
+	private int getRandomInt(int below)
+	{
+		return generator.nextInt(below);
+	}
+	 
 	 
 	/**
 	 * Initializes all the tiles -  adds the type and photos to the tile class
@@ -189,7 +220,7 @@ public class BoardController extends TimerTask implements MouseListener
 	 */
 	private void initializePositions()
 	{
-//		shuffleTiles();
+		shuffleTiles();
 		positions = new boardPosition[currentArrangement.getHeight()][currentArrangement.getRow()][currentArrangement.getColumn()];
 		int counter = 0;
 		
@@ -214,7 +245,9 @@ public class BoardController extends TimerTask implements MouseListener
 						positions[l][r][c] = new boardPosition(allTiles[counter], gameJFrame);
 						counter++;
 						positions[l][r][c].setPlayable(currentArrangement.getPosition(r, c, l));
-						if(l >0)
+						positions[l][r][c].setArrayPosition(r,c);
+						
+						if(l > 0)
 							positions[l][r][c].setPosition(width*r - (2*l)*printBuffer + XOffset, height*c - (2*l)*printBuffer + YOffset, l);
 						else
 							positions[l][r][c].setPosition(width*r + XOffset, height*c + YOffset, l);
@@ -224,6 +257,7 @@ public class BoardController extends TimerTask implements MouseListener
 						if(positions[l][r][c].getPlayable())
 						{
 							validTiles.add(positions[l][r][c]);
+							validTilesCounter[l]++;
 						}
 												
 						if(r != 0) // if not the first column, link to the position on the left
@@ -250,7 +284,7 @@ public class BoardController extends TimerTask implements MouseListener
 						{
 							if(positions[l][r][c-1] != null)
 							{
-								System.out.print(positions[l][r][c-1]);
+//								System.out.print(positions[l][r][c-1]);
 								positions[l][r][c-1].setSouthNeighbors(positions[l][r][c]);
 //								System.out.println(positions[l][r][c]+ " " +(positions[l][r][c-1]));
 							}
@@ -329,9 +363,9 @@ public class BoardController extends TimerTask implements MouseListener
         gameContentPane.addMouseListener(this);
 
         timerLabel= new JLabel();
-        timerLabel.setLocation(5,650);
-        timerLabel.setSize(300, 25);
-        timerLabel.setFont(new Font(timerLabel.getName(), Font.PLAIN, 18));
+        timerLabel.setLocation(425,5);
+        timerLabel.setSize(300, 40);
+        timerLabel.setFont(new Font(timerLabel.getName(), Font.PLAIN, 24));
         gameContentPane.add(timerLabel);
 
         
@@ -347,28 +381,20 @@ public class BoardController extends TimerTask implements MouseListener
         undoButton.setSize(150, 40);
         undoButton.setFont(validPairsLabel.getFont());
         undoButton.setLocation(gameJFrame.getWidth() - undoButton.getWidth() - 25, 5);
+        undoButton.addActionListener(this);
         gameContentPane.add(undoButton);
         
-        undoButton.addActionListener(new ActionListener() {
-        	@Override
-            public void actionPerformed(ActionEvent e) {
-        		
-        		if(matchedTiles.size() > 0)
-    			{
-	        		boardPosition temp = matchedTiles.pop();
-	        		temp.getThisTile().setOnBoard(true);
-	        		validTiles.remove(temp.putBackOnBoard());
-	        		// check playable and if playable add to valid tiles
-	        		
-	        		temp = matchedTiles.pop();
-	        		temp.getThisTile().setOnBoard(true);
-	        		validTiles.remove(temp.putBackOnBoard());
-	        		
-	        		updateBoard();
-    			}
-            }
-
-        });
+        JMenuBar menuBar  = new JMenuBar();
+        menuBar.setBounds(0,0, gameJFrame.getWidth(), 20);
+        gameJFrame.setJMenuBar(menuBar);
+        
+        JMenu menu = new JMenu("File");
+        menuBar.add(menu);
+        
+//        difficultyMenuItem = new JMenuItem("Difficulty Level");
+//        menu.add(difficultyMenuItem);
+        
+        
         // Event mouse position is given relative to JFrame, where dolphin's image in JLabel is given relative to ContentPane,
         //  so adjust for the border
         int borderWidth = (width - gameContentPane.getWidth())/2;  // 2 since border on either side
@@ -420,36 +446,46 @@ public class BoardController extends TimerTask implements MouseListener
     
     private synchronized void updateBoard()
     {
-    		gameIsReady=false;
-    	System.out.print("In update board \n");
+		gameIsReady=false;
     	//gameContentPane.removeAll();
-    	System.out.print("Removed board \n");
     	drawBoard();
-   	System.out.print("Drawed board \n");
     	gameContentPane.repaint();
-   	System.out.print("Repainted board \n");
     	gameIsReady=true;
     }
-    
    
     private void afterMatch(int index)
     {
     	selectedPositions[index].remove();
 		
 		validTiles.remove(selectedPositions[index]);
+		validTilesCounter[selectedPositions[index].getZ()]++;
 		matchedTiles.push(selectedPositions[index]);
 		
 		selectedPositions[index].notifyNeighbors(false);
 		if(!validTiles.contains(selectedPositions[index].getPlayableEastNeighbors()))
-			validTiles.add(selectedPositions[index].getPlayableEastNeighbors());
+		{
+			if(selectedPositions[index].getPlayableEastNeighbors() != null)
+				validTiles.add(selectedPositions[index].getPlayableEastNeighbors());
+			if(selectedPositions[index].getPlayableEastNeighbors() != null)
+				validTilesCounter[selectedPositions[index].getPlayableEastNeighbors().getZ()]++;
+		}
 		if(!validTiles.contains(selectedPositions[index].getPlayableWestNeighbors()))
-			validTiles.add(selectedPositions[index].getPlayableWestNeighbors());
+		{
+			if(selectedPositions[index].getPlayableWestNeighbors() != null)
+				validTiles.add(selectedPositions[index].getPlayableWestNeighbors());
+			if(selectedPositions[index].getPlayableWestNeighbors() != null)
+				validTilesCounter[selectedPositions[index].getPlayableWestNeighbors().getZ()]++;
+		}
 		if(!validTiles.contains(selectedPositions[index].getPlayableBelowNeighbors()))
-			validTiles.add(selectedPositions[index].getPlayableBelowNeighbors());
+		{
+			if(selectedPositions[index].getPlayableBelowNeighbors() != null)
+				validTiles.add(selectedPositions[index].getPlayableBelowNeighbors());
+			if(selectedPositions[index].getPlayableBelowNeighbors() != null)
+				validTilesCounter[selectedPositions[index].getPlayableBelowNeighbors().getZ()]++;
+		}
 		
 //		System.out.println(selectedPositions[index].getPlayableEastNeighbors() + " " + selectedPositions[index].getPlayableWestNeighbors() + " " + selectedPositions[index].getPlayableBelowNeighbors() + "\n");
     }
-
     
 	@Override
 	public void mouseClicked(MouseEvent event) {
@@ -481,7 +517,7 @@ public class BoardController extends TimerTask implements MouseListener
 								r = positions[l].length-1;
 								l = positions.length-1;
 							}
-							else if(positions[l][r][c].equals(selectedPositions[0]))
+							else if(positions[l][r][c].sameCoordinates(selectedPositions[0]))
 							{
 								selectedPositions[0].deselect();
 								selectedPositions[0] = null;
@@ -495,7 +531,6 @@ public class BoardController extends TimerTask implements MouseListener
 		if(selectedPositions[1] != null) {
 			if(selectedPositions[0].equals(selectedPositions[1]))
 			{
-				System.out.println("Match!");
 				afterMatch(0);
 				afterMatch(1);
 				
@@ -556,11 +591,63 @@ public class BoardController extends TimerTask implements MouseListener
 		{
 			initializePositions();
 			updateBoard();
+			gameIsReady = true;
 		}else
 		{
 			System.exit(0);
 		}
 	}
-    
+	
+	private void DifficultyDialog()
+	{
+		gameIsReady= false;
+		
+		String[] levels =  {"Super Easy", "Easy", "Eh, It's Aight", "Average", "Hard", "Very Hard", "This is Literally Impossible"};
+		
+		String difficulty = (String) JOptionPane.showInputDialog(gameJFrame, 
+		        "Difficulty Level",
+		        "Select Your Difficulty Level",
+		        JOptionPane.QUESTION_MESSAGE, 
+		        null, 
+		        levels, 
+		        levels[0]);
+
+		if(difficulty == null)
+			System.exit(0);
+		else
+		{
+				for(int n=0; n<levels.length; n++)
+				{
+					if(difficulty.equals(levels[n]))
+					{
+						shuffleTime = DEFAULTSHUFFLETIME-2000*n;
+//						gameTimer.schedule(this, 0, shuffleTime);
+					}
+				}
+		}
+		gameIsReady = true;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		
+		if(event.getSource().equals(undoButton))
+		{
+			if(matchedTiles.size() > 0)
+			{
+        		boardPosition temp = matchedTiles.pop();
+        		temp.getThisTile().setOnBoard(true);
+        		validTiles.remove(temp.putBackOnBoard());
+        		// check playable and if playable add to valid tiles
+        		
+        		temp = matchedTiles.pop();
+        		temp.getThisTile().setOnBoard(true);
+        		validTiles.remove(temp.putBackOnBoard());
+        		
+        		updateBoard();
+			}
+        }
+	}
+		    
     
 }
