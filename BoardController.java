@@ -80,7 +80,7 @@ public class BoardController extends TimerTask implements MouseListener
 	public static void main(String[] args) 
 	{
 		try {
-			BoardController controller = new BoardController("simple.txt", "Mahjong Solitaire", 900, 800, 20, 20);
+			BoardController controller = new BoardController("castle.txt", "Mahjong Solitaire", 900, 800, 20, 20);
 		}catch(IOException e)
 		{
 			e.printStackTrace();
@@ -120,7 +120,7 @@ public class BoardController extends TimerTask implements MouseListener
 	    		timerOff++;
 	    		if (gameIsReady)
 	    		{
-		        	timerLabel.setText(Integer.toString(timerOff));
+		        	timerLabel.setText("Time: " +Integer.toString(timerOff));
 		        	timerLabel.repaint();
 	    		}
 	       
@@ -541,8 +541,10 @@ public class BoardController extends TimerTask implements MouseListener
 	private void endOfGameDialog()
 	{
 		gameIsReady=false;
-		String temp = String.format("There are no more valid moves. \nYou matched %d of %d of pairs. \nWould you like to play again?",
-				 numberOfCompletedMatches, NUMBEROFMATCHES);
+		String temp = String.format("There are no more valid moves. \nYou matched %.2f %% of the tiles! \nWould you like to play again?",
+				 (numberOfCompletedMatches/ (double) NUMBEROFMATCHES)*100);
+		/*String temp = String.format("There are no more valid moves. \nYou matched %d of %d of pairs. \nWould you like to play again?",
+				 numberOfCompletedMatches, NUMBEROFMATCHES);*/
 		int n = JOptionPane.showOptionDialog(gameJFrame,
 			temp,
 			"Play Again",
