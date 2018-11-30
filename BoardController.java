@@ -46,6 +46,11 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 	private final int NUMBEROFMATCHES = 72;
 	private final int TIMERSCHEDULE = 500;
 	private final int DEFAULTSHUFFLETIME = 12500; 
+	private final String[] levels =  {"Super Easy", "Easy", "Eh, It's Aight", "Average", "Hard", "Very Hard", "This is Literally Impossible"};
+	private final String[] arrangements = {"Bowtie", "Castle", "Carroll College", "Pyramid"};
+	private final String[] files = {"bowtie.txt", "castle.txt", "cc.txt", "simple.txt"};
+	private final int[][] offsets = { {175, 200}, {350,125}, {75, 125}, {250, 100} };
+
 	
 	private tile allTiles[]= new tile[TOTAL_TILES];
 	private boardPosition[][][] positions;
@@ -63,7 +68,7 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
     private Container gameContentPane;
     private JLabel validPairsLabel;
     private JButton undoButton;
-    private JMenuItem difficultyMenuItem;
+    private JMenuItem helpMenuItem;
     private int width;
     private int height;
 
@@ -83,7 +88,7 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 	public static void main(String[] args) 
 	{
 		try {
-			BoardController controller = new BoardController("castle.txt", "Mahjong Solitaire", 900, 800, 20, 20);
+			BoardController controller = new BoardController("Mahjong Solitaire", 900, 800, 20, 20);
 		}catch(IOException e)
 		{
 			e.printStackTrace();
@@ -91,11 +96,8 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 	}
 	
 	
-	
-	public BoardController(String filename, String windowTitle, int windowWidth, int windowHeight, int xlocation, int ylocation) throws IOException
+	public BoardController(String windowTitle, int windowWidth, int windowHeight, int xlocation, int ylocation) throws IOException
 	{
-		currentArrangement = new boardArrangements(new File(filename));
-		validTilesCounter = new int[currentArrangement.getHeight()];
 		width=62;
 		height=82;
 
@@ -105,13 +107,12 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
     	
     	//System.out.print("Width: " + width + "Height: " + height); // 62 x 82
 
+		chooseArrangmentAndDifficulty();
 
 		initializeGUI(windowTitle, windowWidth, windowHeight, xlocation, ylocation);
 		initializeTiles();
 		initializePositions();
 		drawBoard();
-		
-		DifficultyDialog();
 		
 		gameIsReady=true;
 		gameJFrame.setVisible(true);
@@ -390,8 +391,9 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
         JMenu menu = new JMenu("File");
         menuBar.add(menu);
         
-//        difficultyMenuItem = new JMenuItem("Difficulty Level");
-//        menu.add(difficultyMenuItem);
+        helpMenuItem = new JMenuItem("How To Play Mahjong");
+        helpMenuItem.addActionListener(this);
+        menu.add(helpMenuItem);
         
         
         // Event mouse position is given relative to JFrame, where dolphin's image in JLabel is given relative to ContentPane,
@@ -450,6 +452,17 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
     	drawBoard();
     	gameContentPane.repaint();
     	gameIsReady=true;
+    }
+    
+    private void chooseArrangmentAndDifficulty()
+    {
+		try {
+			layoutDialog();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		validTilesCounter = new int[currentArrangement.getHeight()];
+		DifficultyDialog();
     }
    
     private void afterMatch(int index)
@@ -600,14 +613,10 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 	}
 	
 	private void DifficultyDialog()
-	{
-		gameIsReady= false;
-		
-		String[] levels =  {"Super Easy", "Easy", "Eh, It's Aight", "Average", "Hard", "Very Hard", "This is Literally Impossible"};
-		
+	{				
 		String difficulty = (String) JOptionPane.showInputDialog(gameJFrame, 
 		        "Difficulty Level",
-		        "Select Your Difficulty Level",
+		        "Select A Difficulty Level",
 		        JOptionPane.QUESTION_MESSAGE, 
 		        null, 
 		        levels, 
@@ -622,11 +631,50 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 					if(difficulty.equals(levels[n]))
 					{
 						shuffleTime = DEFAULTSHUFFLETIME-2000*n;
-//						gameTimer.schedule(this, 0, shuffleTime);
 					}
 				}
 		}
-		gameIsReady = true;
+	}
+	
+	private void layoutDialog() throws IOException
+	{
+		String difficulty = (String) JOptionPane.showInputDialog(gameJFrame, 
+		        "Tile Arrangements",
+		        "Select A Tile Arrangement",
+		        JOptionPane.QUESTION_MESSAGE, 
+		        null, 
+		        arrangements, 
+		        arrangements[0]);
+
+		if(difficulty == null)
+			System.exit(0);
+		else
+		{
+			for(int n=0; n<arrangements.length; n++)
+			{
+				if(difficulty.equals(arrangements[n]))
+				{
+					currentArrangement = new boardArrangements(new File(files[n]));
+					XOffset = offsets[n][0];
+					YOffset = offsets[n][1];
+				}
+			}
+		}
+	}
+	
+	private void helpDialog()
+	{
+		String temp = "Mahjong solitaire is a one player game where the player matches two of the same tiles. \n "
+				+ "144 rectangular tiles are laid out on the table with some tiles layered on top of others.\n"
+				+ " The player can only match tiles that are not stacked below other tiles and tiles who have a long edge not adjacent to another tile.\n"
+				+ " The aim of this game is to clear the tiles. The matched tiles disappear from the board making some new tiles visible and/or playable.";
+		
+		JOptionPane.showMessageDialog(
+			    gameJFrame,
+			    temp,
+			    "How To Play Mahjong",
+			    JOptionPane.PLAIN_MESSAGE);
+			
 	}
 
 	@Override
@@ -647,6 +695,9 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
         		
         		updateBoard();
 			}
+        }else if(event.getSource().equals(helpMenuItem))
+        {
+        	helpDialog();
         }
 	}
 		    
