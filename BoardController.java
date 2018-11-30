@@ -446,7 +446,7 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
     private synchronized void updateBoard()
     {
 		gameIsReady=false;
-    	//gameContentPane.removeAll();
+    	gameContentPane.removeAll();
     	drawBoard();
     	gameContentPane.repaint();
     	gameIsReady=true;
