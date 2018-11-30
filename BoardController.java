@@ -75,9 +75,12 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 	private int xMouseOffsetToContentPaneFromJFrame = 0;
     private int yMouseOffsetToContentPaneFromJFrame = 0;
     private int printBuffer = 4;
-    private int XOffset = 100;
+    private int XOffset = 250;
     private int YOffset = 100;
-
+    //bowtie- 175, 200
+    //castle- 350, 125
+    //cc- 75, 125
+    //simple- 250, 100
     private java.util.Timer gameTimer = new java.util.Timer();
     private int timeCounter=0;
     private boolean gameIsReady = false;
@@ -128,26 +131,39 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 		timeCounter++;
 		if (gameIsReady)
 		{
-	    	if(timeCounter%2 == 0)
-	    	{
-				timerLabel.setText("Time: " + Integer.toString(timeCounter/2) + " sec");
-		    	timerLabel.repaint();
-	    	}
-	    	
-	    	if(TIMERSCHEDULE*timeCounter % shuffleTime == 0)
-	    	{
-		    	boardPosition first = validTiles.get(getRandomInt(validTiles.size()));
-	
-		    	if(first.getZ() > 1)
+		    	if(timeCounter%2 == 0)
 		    	{
-		    		first.switchNeighbors(positions[getRandomInt(first.getZ())][first.getArrayX()][first.getArrayY()]);
-		    	}else if(first.getZ() > 0)
-		    	{
-		    		first.switchNeighbors(positions[0][first.getArrayX()][first.getArrayY()]);
+		    		int minutes=timeCounter/120;
+		    		int seconds=(timeCounter/2)-(minutes*60);
+		    		if (seconds==0)
+		    		{
+		    			timerLabel.setText("Time: " + Integer.toString(minutes) +":" + "00");
+		    		}
+		    		else if (seconds<10)
+		    		{
+		    			timerLabel.setText("Time: " + Integer.toString(minutes) +":0" + Integer.toString(seconds));
+		    		}
+		    		else
+		    		{
+				timerLabel.setText("Time: " + Integer.toString(minutes) +":" + Integer.toString(seconds));
+		    		}
+			    	timerLabel.repaint();
 		    	}
 		    	
-		    	first.getJLabel().repaint();
-	    	}
+		    	if(TIMERSCHEDULE*timeCounter % shuffleTime == 0)
+		    	{
+			    	boardPosition first = validTiles.get(getRandomInt(validTiles.size()));
+		
+			    	if(first.getZ() > 1)
+			    	{
+			    		first.switchNeighbors(positions[getRandomInt(first.getZ())][first.getArrayX()][first.getArrayY()]);
+			    	}else if(first.getZ() > 0)
+			    	{
+			    		first.switchNeighbors(positions[0][first.getArrayX()][first.getArrayY()]);
+			    	}
+			    	
+			    	first.getJLabel().repaint();
+		    	}
 		}
 		       
 	}
@@ -363,7 +379,7 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
         gameContentPane.addMouseListener(this);
 
         timerLabel= new JLabel();
-        timerLabel.setLocation(425,5);
+        timerLabel.setLocation(550,5);
         timerLabel.setSize(300, 40);
         timerLabel.setFont(new Font(timerLabel.getName(), Font.PLAIN, 24));
         gameContentPane.add(timerLabel);
