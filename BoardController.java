@@ -91,7 +91,7 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 	public static void main(String[] args) 
 	{
 		try {
-			BoardController controller = new BoardController("Mahjong Solitaire", 900, 800, 20, 20);
+			BoardController controller = new BoardController("Mahjong Solitaire", 1200, 800, 20, 20);
 		}catch(IOException e)
 		{
 			e.printStackTrace();
@@ -619,6 +619,7 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 		
 		if ( n == 0)
 		{
+			chooseArrangmentAndDifficulty();
 			initializePositions();
 			updateBoard();
 			gameIsReady = true;
