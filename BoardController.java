@@ -453,7 +453,7 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
     	gameContentPane.add(validPairsLabel);
     	int valid = findValidPairs();
     	gameContentPane.add(timerLabel);
-    	if(valid <= 10)
+    	if(valid == 0)
     	{
     		endOfGameDialog();
     	}
