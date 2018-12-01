@@ -160,6 +160,7 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 			    	}else if(first.getZ() > 0)
 			    	{
 			    		first.switchNeighbors(positions[0][first.getArrayX()][first.getArrayY()]);
+			    		findValidPairs();
 			    	}
 			    	
 			    	first.getJLabel().repaint();
@@ -314,8 +315,6 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 			}
 			
 		}
-
-		
 	}
 	
 	
@@ -363,6 +362,7 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
 			   counter++;
 		   }
 	   }
+	   validPairsLabel.setText("Valid Pairs On Board: " + validPair);
 	   return validPair;
    }
 
@@ -452,9 +452,8 @@ public class BoardController extends TimerTask implements MouseListener, ActionL
     	gameContentPane.add(undoButton);
     	gameContentPane.add(validPairsLabel);
     	int valid = findValidPairs();
-    	validPairsLabel.setText("Valid Pairs On Board: " + valid);
     	gameContentPane.add(timerLabel);
-    	if(valid == 0)
+    	if(valid <= 10)
     	{
     		endOfGameDialog();
     	}
